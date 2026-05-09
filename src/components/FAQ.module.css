@@ -1,0 +1,120 @@
+.section {
+  padding: 100px 0;
+  background: var(--bg-page);
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.header {
+  position: sticky;
+  top: 100px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.link {
+  color: var(--green-primary);
+  font-weight: 600;
+}
+
+.link:hover { text-decoration: underline; }
+
+/* Accordion */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.item {
+  border-bottom: 1px solid var(--border-light);
+  transition: background var(--transition-fast);
+}
+
+.item:last-child { border-bottom: none; }
+
+.itemOpen {
+  background: var(--green-subtle);
+}
+
+.question {
+  width: 100%;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+  transition: color var(--transition-fast);
+}
+
+.itemOpen .question {
+  color: var(--green-primary);
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  background: var(--green-pale);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green-primary);
+  flex-shrink: 0;
+  transition: transform var(--transition-base);
+}
+
+.iconOpen {
+  transform: rotate(180deg);
+  background: var(--green-primary);
+  color: white;
+}
+
+.answer {
+  padding: 0 28px 22px;
+  animation: slideIn 0.25s ease;
+}
+
+.answer p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+@media (max-width: 860px) {
+  .wrapper {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .header {
+    position: static;
+    text-align: center;
+  }
+  .section { padding: 64px 0; }
+}
