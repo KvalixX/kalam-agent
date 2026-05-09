@@ -1,80 +1,58 @@
-import styles from './Features.module.css';
+'use client';
+
+import { motion } from 'framer-motion';
+import { MessageSquare, PackageSearch, BellRing, Users, LineChart, Zap } from 'lucide-react';
 
 const features = [
   {
-    icon: '💬',
-    title: 'Réponses en Darija',
-    desc: 'L\'IA répond dans la langue de ton client — Darija, français, arabe classique, ou un mélange des trois. Naturellement.',
-    color: '#1D9E75',
-    bg: '#e8f8f2',
+    icon: MessageSquare,
+    title: 'Native Darija Intelligence',
+    desc: 'The AI speaks fluent Darija, French, and classical Arabic. It seamlessly code-switches just like a real Moroccan agent.',
   },
   {
-    icon: '📦',
-    title: 'Suivi commande automatique',
-    desc: '"Wach waslet commande dyali?" → L\'agent récupère le statut en temps réel et répond en 5 secondes.',
-    color: '#378ADD',
-    bg: '#eaf2fc',
+    icon: PackageSearch,
+    title: 'Real-time Order Tracking',
+    desc: '"Wach waslet commande dyali?" → The agent instantly fetches the status from Amana or J&T and replies in 2 seconds.',
   },
   {
-    icon: '🔔',
-    title: 'Escalade intelligente',
-    desc: 'Quand une situation dépasse l\'IA, elle te notifie instantanément avec un résumé et une recommandation d\'action.',
-    color: '#F59E0B',
-    bg: '#fef9ec',
+    icon: Zap,
+    title: '24/7 Auto-Sales',
+    desc: 'While you sleep, Kalam is answering inquiries, suggesting products, and closing sales on WhatsApp.',
   },
   {
-    icon: '👥',
-    title: 'CRM client automatique',
-    desc: 'Chaque client est identifié, segmenté (VIP, régulier, à risque) et sa fiche enrichie automatiquement à chaque échange.',
-    color: '#8B5CF6',
-    bg: '#f3f0fe',
+    icon: BellRing,
+    title: 'Smart Escalation',
+    desc: 'When a situation requires human touch, the AI seamlessly transfers the chat and notifies you with a summary.',
   },
   {
-    icon: '📊',
-    title: 'Rapports hebdomadaires IA',
-    desc: 'Chaque lundi, un rapport qui te dit les questions qui reviennent, les problèmes à régler, et les opportunités à saisir.',
-    color: '#E24B4A',
-    bg: '#fdf0f0',
+    icon: Users,
+    title: 'Automated CRM',
+    desc: 'Every customer is identified, segmented (VIP, at-risk), and enriched automatically during the conversation.',
   },
   {
-    icon: '⚡',
-    title: 'Réponse en 30 secondes',
-    desc: 'Ton client envoie un message à 2h du matin. L\'agent répond immédiatement. Ton concurrent, lui, répond à 9h.',
-    color: '#1D9E75',
-    bg: '#e8f8f2',
+    icon: LineChart,
+    title: 'Weekly AI Insights',
+    desc: 'Get automated reports highlighting recurring questions, delivery bottlenecks, and new revenue opportunities.',
   },
 ];
 
 export default function Features() {
   return (
-    <section className={styles.section} id="features">
-      <div className="container">
-        <div className={styles.header}>
-          <div className="section-tag">
-            <span className="dot"></span>
-            Fonctionnalités
-          </div>
-          <h2 className={styles.title}>
-            Tout ce dont tu as besoin pour{' '}
-            <span className={styles.green}>automatiser ton SAV</span>
-          </h2>
-          <p className={styles.subtitle}>
-            Kalam gère l&apos;intégralité de tes communications clients — de la question produit à la réclamation,
-            en passant par le suivi de livraison.
-          </p>
+    <section className="py-20 bg-white" id="features">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">Everything you need to scale</h2>
+          <p className="text-gray-500 font-medium max-w-2xl mx-auto">Kalam manages the entire customer lifecycle — from product inquiries to returns and delivery tracking.</p>
         </div>
 
-        <div className={styles.grid}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((f, i) => (
-            <div className={styles.card} key={i} style={{ animationDelay: `${i * 0.1}s` }}>
-              <div className={styles.iconWrap} style={{ background: f.bg, color: f.color }}>
-                <span>{f.icon}</span>
+            <div key={i} className="p-6 rounded-3xl border border-border bg-gray-50/50 hover:bg-white hover:shadow-xl hover:shadow-primary/5 transition-all group">
+              <div className="w-10 h-10 rounded-xl bg-primary/5 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <f.icon className="w-5 h-5" />
               </div>
-              <h3 className={styles.cardTitle}>{f.title}</h3>
-              <p className={styles.cardDesc}>{f.desc}</p>
-              <div className={styles.cardArrow} style={{ color: f.color }}>
-                En savoir plus →
-              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">{f.title}</h3>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>

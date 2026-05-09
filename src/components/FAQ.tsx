@@ -1,39 +1,29 @@
 'use client';
+
 import { useState } from 'react';
-import styles from './FAQ.module.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Minus } from 'lucide-react';
 
 const faqs = [
   {
-    q: 'Est-ce que l\'agent parle vraiment en Darija ?',
-    a: 'Oui, c\'est notre priorité absolue. L\'agent Kalam répond en Darija authentique, en français, en arabe classique, et dans le mélange des deux que parlent la plupart des Marocains. Il s\'adapte automatiquement à la langue du client.',
+    q: 'Does the agent really speak Darija?',
+    a: 'Yes, this is our core advantage. Kalam responds in authentic Darija, French, classical Arabic, and the natural mix of these languages commonly used by Moroccans. It automatically adapts to the customer\'s language.',
   },
   {
-    q: 'Mes clients vont-ils savoir qu\'ils parlent à une IA ?',
-    a: 'Non, sauf s\'ils le demandent directement — dans ce cas l\'agent répond honnêtement. Le ton, les expressions et le style de réponse sont configurés pour ressembler à un vrai agent humain de ta boutique.',
+    q: 'Will my customers know they are talking to an AI?',
+    a: 'No, unless they explicitly ask — in which case the agent answers honestly. The tone, expressions, and style are configured to feel exactly like a real human agent from your store.',
   },
   {
-    q: 'Comment fonctionne la connexion à Youcan ou Shopify ?',
-    a: 'Tu autorises Kalam via OAuth2 (bouton "Connecter ma boutique") en 2 clics. Kalam accède ensuite aux commandes, au stock et aux infos de livraison pour les mettre dans les réponses en temps réel.',
+    q: 'How does the Shopify/YouCan connection work?',
+    a: 'You authorize Kalam via OAuth2 (click "Connect Store") in 2 clicks. Kalam then securely accesses orders, inventory, and tracking data to include in responses in real-time.',
   },
   {
-    q: 'Que se passe-t-il quand l\'IA ne sait pas répondre ?',
-    a: 'L\'agent déclenche une escalade automatique : il envoie un message poli au client ("je transfère votre demande à notre équipe"), puis te notifie immédiatement sur WhatsApp et dans le dashboard avec un résumé de la situation.',
+    q: 'What happens when the AI cannot answer?',
+    a: 'The agent triggers an automatic escalation: it sends a polite message to the client ("I am transferring your request to our team"), then immediately notifies you on WhatsApp and your dashboard with a summary.',
   },
   {
-    q: 'Puis-je reprendre la main sur une conversation ?',
-    a: 'Oui, à tout moment. Tu cliques sur "Prendre en main" dans le dashboard, et l\'IA se met en veille sur cette conversation. Elle peut reprendre automatiquement 24h après résolution.',
-  },
-  {
-    q: 'Combien de temps prend la configuration initiale ?',
-    a: 'Moins de 20 minutes pour la configuration complète : nom de l\'agent, FAQ, politique de retour, connexion WhatsApp et boutique. Un assistant IA t\'aide à rédiger si besoin.',
-  },
-  {
-    q: 'Y a-t-il un engagement minimum ?',
-    a: 'Aucun engagement. Tu peux annuler à tout moment. Le plan annuel offre 2 mois gratuits, mais reste résiliable (avec remboursement au prorata).',
-  },
-  {
-    q: 'Comment fonctionne l\'essai gratuit de 14 jours ?',
-    a: 'Tu crées un compte, tu configures ton agent, et tu as 14 jours d\'accès complet au plan Pro — aucune carte de crédit requise. À la fin, tu choisis le plan qui te convient ou tu arrêtes, sans engagement.',
+    q: 'Can I take over a conversation manually?',
+    a: 'Yes, at any time. You click "Take Over" in the dashboard, and the AI goes into standby mode for that specific conversation. It resumes automatically 24 hours after resolution.',
   },
 ];
 
@@ -41,48 +31,45 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section className={styles.section} id="faq">
-      <div className="container">
-        <div className={styles.wrapper}>
-          <div className={styles.header}>
-            <div className="section-tag">
-              <span className="dot"></span>
-              FAQ
-            </div>
-            <h2 className={styles.title}>Questions fréquentes</h2>
-            <p className={styles.subtitle}>
-              Tu as d&apos;autres questions ? Écris-nous sur{' '}
-              <a href="mailto:hello@kalam.ma" className={styles.link}>hello@kalam.ma</a>
-            </p>
-          </div>
+    <section className="py-20 bg-white" id="faq">
+      <div className="container mx-auto px-4 max-w-2xl">
+        <div className="mb-12 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3 text-foreground">Frequently Asked Questions</h2>
+          <p className="text-sm text-gray-600">Everything you need to know about Kalam.</p>
+        </div>
 
-          <div className={styles.list}>
-            {faqs.map((faq, i) => (
-              <div
-                key={i}
-                className={`${styles.item} ${open === i ? styles.itemOpen : ''}`}
-                id={`faq-item-${i}`}
+        <div className="space-y-3">
+          {faqs.map((faq, i) => (
+            <div
+              key={i}
+              className="bg-white border border-border rounded-xl overflow-hidden transition-colors hover:border-primary/20 hover:shadow-sm"
+            >
+              <button
+                className="w-full px-5 py-4 flex items-center justify-between text-left"
+                onClick={() => setOpen(open === i ? null : i)}
               >
-                <button
-                  className={styles.question}
-                  onClick={() => setOpen(open === i ? null : i)}
-                  aria-expanded={open === i}
-                >
-                  <span>{faq.q}</span>
-                  <div className={`${styles.icon} ${open === i ? styles.iconOpen : ''}`}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                  </div>
-                </button>
+                <span className="text-sm font-medium text-foreground">{faq.q}</span>
+                <div className="text-primary">
+                  {open === i ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                </div>
+              </button>
+              
+              <AnimatePresence>
                 {open === i && (
-                  <div className={styles.answer}>
-                    <p>{faq.a}</p>
-                  </div>
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-5 pt-0 text-gray-600 leading-relaxed text-xs border-t border-border mt-1 pt-3">
+                      {faq.a}
+                    </div>
+                  </motion.div>
                 )}
-              </div>
-            ))}
-          </div>
+              </AnimatePresence>
+            </div>
+          ))}
         </div>
       </div>
     </section>

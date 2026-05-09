@@ -1,6 +1,10 @@
 'use client';
+
 import { useState, useEffect } from 'react';
-import styles from './Navbar.module.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Bot, Menu, X, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -13,54 +17,64 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
-      <div className={`container ${styles.nav}`}>
-        {/* Logo */}
-        <a href="/" className={styles.logo} id="nav-logo">
-          <div className={styles.logoIcon}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C6.48 2 2 6.48 2 12C2 13.86 2.5 15.61 3.38 17.1L2.05 21.95L7.05 20.65C8.5 21.49 10.19 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" fill="white"/>
-            </svg>
+    <header
+      className={cn(
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent',
+        scrolled && 'bg-white/80 backdrop-blur-md border-border shadow-sm'
+      )}
+    >
+      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 rounded-lg bg-primary-light border border-primary/20 flex items-center justify-center group-hover:bg-primary transition-colors">
+            <Bot className="w-4 h-4 text-primary group-hover:text-white transition-colors" />
           </div>
-          <span>Kalam <span className={styles.arabic}>كلام</span></span>
-        </a>
+          <span className="font-bold text-lg tracking-tight text-foreground">Kalam</span>
+        </Link>
 
-        {/* Desktop Nav */}
-        <nav className={styles.navLinks} id="nav-links">
-          <a href="#features" className={styles.navLink}>Fonctionnalités</a>
-          <a href="#how-it-works" className={styles.navLink}>Comment ça marche</a>
-          <a href="#pricing" className={styles.navLink}>Tarifs</a>
-          <a href="#faq" className={styles.navLink}>FAQ</a>
+        <nav className="hidden md:flex items-center gap-8">
+          <Link href="#features" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Features</Link>
+          <Link href="#integrations" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Integrations</Link>
+          <Link href="#pricing" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Pricing</Link>
         </nav>
 
-        {/* CTA */}
-        <div className={styles.navCta}>
-          <a href="/connexion" className={styles.loginLink} id="nav-login">Connexion</a>
-          <a href="/inscription" className="btn-primary" id="nav-signup" style={{ padding: '10px 22px', fontSize: '14px' }}>
-            Essai gratuit 14j
-          </a>
+        <div className="hidden md:flex items-center gap-4">
+          <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">
+            Log in
+          </Link>
+          <Link
+            href="/signup"
+            className="group relative inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-full overflow-hidden transition-all hover:bg-primary-dark hover:shadow-md hover:shadow-primary/20"
+          >
+            <span className="relative z-10">Start for free</span>
+            <ChevronRight className="w-4 h-4 relative z-10 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
         </div>
 
-        {/* Mobile toggle */}
-        <button className={styles.burger} onClick={() => setMobileOpen(!mobileOpen)} id="nav-burger" aria-label="Menu">
-          <span className={`${styles.burgerLine} ${mobileOpen ? styles.open1 : ''}`}></span>
-          <span className={`${styles.burgerLine} ${mobileOpen ? styles.open2 : ''}`}></span>
-          <span className={`${styles.burgerLine} ${mobileOpen ? styles.open3 : ''}`}></span>
+        <button
+          className="md:hidden text-gray-600 hover:text-primary"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className={styles.mobileMenu}>
-          <a href="#features" onClick={() => setMobileOpen(false)}>Fonctionnalités</a>
-          <a href="#how-it-works" onClick={() => setMobileOpen(false)}>Comment ça marche</a>
-          <a href="#pricing" onClick={() => setMobileOpen(false)}>Tarifs</a>
-          <a href="#faq" onClick={() => setMobileOpen(false)}>FAQ</a>
-          <hr />
-          <a href="/connexion">Connexion</a>
-          <a href="/inscription" className={styles.mobileSignup}>Essai gratuit 14 jours →</a>
-        </div>
-      )}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-border shadow-lg py-4 px-6 flex flex-col gap-4"
+          >
+            <Link href="#features" className="text-gray-600 font-medium hover:text-primary py-2" onClick={() => setMobileOpen(false)}>Features</Link>
+            <Link href="#integrations" className="text-gray-600 font-medium hover:text-primary py-2" onClick={() => setMobileOpen(false)}>Integrations</Link>
+            <Link href="#pricing" className="text-gray-600 font-medium hover:text-primary py-2" onClick={() => setMobileOpen(false)}>Pricing</Link>
+            <div className="h-px bg-border my-2" />
+            <Link href="/login" className="text-gray-600 font-medium hover:text-primary py-2">Log in</Link>
+            <Link href="/signup" className="text-primary font-bold py-2">Start for free &rarr;</Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

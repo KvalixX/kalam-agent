@@ -1,229 +1,50 @@
-# Kalam كلام — Plateforme d'Opérations Client IA
+# 🏺 Kalam AI Platform
 
-> **Ton agent client qui parle comme toi** — SaaS B2B de service client IA pour l'e-commerce marocain et maghrébin.
+**The first AI-powered sales agent built for Moroccan E-commerce.**
 
-## 🚀 Présentation
+Kalam AI automates WhatsApp sales for Moroccan merchants by speaking natural Darija, syncing with Shopify/YouCan, and handling customer inquiries 24/7.
 
-**Kalam** est une plateforme SaaS qui permet aux marchands e-commerce et aux commerces de détail du Maroc et du Maghreb de gérer automatiquement l'intégralité de leurs communications clients grâce à l'intelligence artificielle.
+## 🎯 Current Milestone: Phase 1 Complete
 
-L'agent IA de Kalam répond aux clients sur **WhatsApp**, **Instagram** et par **email** en **Darija, français et arabe classique**, 24h/24 et 7j/7.
+The **Phase 1 Frontend** is now 100% complete and production-ready. 
 
-### Avantages Clés
+### **Recent Accomplishments:**
+- **14 Dashboard Modules**: Full administrative suite from CRM and Campaigns to AI Activity Logs and Widget Customizers.
+- **Premium Design System**: High-density "SaaS Cockpit" aesthetic using custom Tailwind tokens and standard Lucide icons.
+- **Advanced UX**: Global `Cmd + K` search palette, smooth skeleton loaders, and responsive mobile-first layouts.
+- **Typography Audit**: Standardized platform-wide font weights (Normal/Medium/Semibold) for maximum clarity and professionalism.
 
-| | |
-|---|---|
-| 🗣️ **Darija natif** | Maîtrise native du dialecte marocain, code-switching français/arabe |
-| ⚡ **< 30 secondes** | Temps de réponse moyen vs 2-8 heures en manuel |
-| 🔗 **Intégrations locales** | Youcan, Shopify, Amana, J&T Express, CMI |
-| 🤖 **80%+ automatisé** | Messages gérés sans intervention humaine |
-| 📊 **CRM automatique** | Fiches clients, segmentation, rapports hebdomadaires IA |
+## 🛠️ Next Steps (Phase 2)
+1. **Backend Integration**: Connecting Supabase/PostgreSQL for real-time data persistence.
+2. **AI Webhook Implementation**: Setting up the Meta Business API for real WhatsApp message processing.
+3. **E-commerce Sync**: Building real API bridges for Shopify and YouCan catalog synchronization.
 
----
+## 🛠️ Tech Stack
 
-## 🛠️ Stack Technique
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **Design System**: Custom high-density, "SaaS Cockpit" aesthetic with premium typography.
 
-### Frontend (ce repo — Landing Page v1)
+## 📂 Project Structure
 
-| Technologie | Version | Usage |
-|---|---|---|
-| **Next.js** | 15+ | Framework React avec App Router |
-| **TypeScript** | 5+ | Type safety |
-| **CSS Modules** | — | Styling composant par composant |
-| **Google Fonts** | Inter + Noto Sans Arabic | Typographie latine + arabe |
+- `/src/app/dashboard`: The 14-page administrative cockpit.
+- `/src/components`: Reusable UI components (Hero, Features, etc.).
+- `/src/app/onboarding`: Multi-step merchant setup flow.
+- `/src/app/login` & `/src/app/signup`: Secure authentication interfaces.
 
-### Backend (à venir — Phase 1)
+## 🏁 Getting Started
 
-| Technologie | Usage |
-|---|---|
-| **Node.js / Fastify** | API Gateway |
-| **Supabase (PostgreSQL)** | Base de données + Auth + Realtime |
-| **Prisma** | ORM type-safe |
-| **BullMQ + Redis** | Queue de traitement asynchrone |
-| **Claude API (Anthropic)** | LLM principal pour la génération de réponses |
-| **WhatsApp Business API** | Canal de communication principal |
+1. **Clone the repo**
+2. **Install dependencies**: `npm install`
+3. **Run development server**: `npm run dev`
+4. **Build for production**: `npm run build`
 
----
+## 📄 Documentation
 
-## 📁 Structure du Projet
-
-```
-kalam-app/
-├── src/
-│   ├── app/
-│   │   ├── globals.css          # Design system global (tokens, animations)
-│   │   ├── layout.tsx           # Root layout + metadata SEO
-│   │   └── page.tsx             # Page principale (assemblage des sections)
-│   └── components/
-│       ├── Navbar.tsx           # Navigation sticky avec scroll effect
-│       ├── Hero.tsx             # Section hero avec mockup WhatsApp Darija animé
-│       ├── SocialProof.tsx      # Logos partenaires + stats (marquee animé)
-│       ├── Features.tsx         # 6 fonctionnalités clés
-│       ├── HowItWorks.tsx       # Process en 4 étapes (timeline)
-│       ├── Pricing.tsx          # 3 plans tarifaires avec toggle mensuel/annuel
-│       ├── Testimonials.tsx     # 4 témoignages marchands
-│       ├── FAQ.tsx              # Accordéon FAQ (8 questions)
-│       ├── CTABanner.tsx        # Banner CTA final (gradient vert)
-│       └── Footer.tsx           # Footer complet avec liens et socials
-├── public/
-├── package.json
-└── README.md
-```
+For a detailed guide on how to use the platform as a merchant, please refer to [USER_GUIDE.md](./USER_GUIDE.md).
 
 ---
 
-## 🏁 Démarrage Rapide
-
-### Prérequis
-
-- Node.js 18+
-- npm / yarn / pnpm
-
-### Installation
-
-```bash
-# Cloner le repo
-git clone https://github.com/KvalixX/kalam-agent.git
-cd kalam-agent
-
-# Installer les dépendances
-npm install
-
-# Lancer le serveur de développement
-npm run dev
-```
-
-Ouvrir [http://localhost:3000](http://localhost:3000) dans le navigateur.
-
-### Build Production
-
-```bash
-npm run build
-npm start
-```
-
----
-
-## 🎨 Design System
-
-### Couleurs
-
-| Token | Valeur | Usage |
-|---|---|---|
-| `--green-primary` | `#1D9E75` | Couleur principale (CTA, accents) |
-| `--green-light` | `#25c48f` | Hover states |
-| `--green-pale` | `#e8f8f2` | Backgrounds légers |
-| `--blue-accent` | `#378ADD` | Actions secondaires |
-| `--red-alert` | `#E24B4A` | Urgences, escalades |
-| `--text-primary` | `#0f2b1e` | Texte principal |
-
-### Typographie
-
-- **Latine** : [Inter](https://fonts.google.com/specimen/Inter) — poids 300 à 900
-- **Arabe** : [Noto Sans Arabic](https://fonts.google.com/noto/specimen/Noto+Sans+Arabic) — pour les interfaces RTL
-
----
-
-## 📋 Roadmap
-
-### ✅ Phase 0 — Landing Page (actuelle)
-- [x] Design system complet
-- [x] Navbar responsive avec scroll effect
-- [x] Section Hero avec mockup WhatsApp Darija animé
-- [x] Social proof avec marquee intégrations
-- [x] 6 features cards
-- [x] How it works (timeline 4 étapes)
-- [x] Pricing (3 plans + toggle mensuel/annuel)
-- [x] Testimonials marchands
-- [x] FAQ accordéon
-- [x] CTA Banner gradient
-- [x] Footer complet
-
-### 🔜 Phase 1 — MVP Backend (Semaines 3-7)
-- [ ] Auth (register, login, JWT via Supabase)
-- [ ] Schéma DB complet (Prisma + PostgreSQL)
-- [ ] Webhook WhatsApp (réception + envoi)
-- [ ] Pipeline de traitement messages
-- [ ] Intégration Claude API (Darija)
-- [ ] Dashboard basique (inbox + conversations)
-
-### 📅 Phase 2 — Intégrations Locales (Semaines 8-12)
-- [ ] Intégration Youcan (commandes, tracking)
-- [ ] Intégration Shopify
-- [ ] Intégration Amana Express
-- [ ] CRM client automatique
-- [ ] Système d'escalade complet
-- [ ] Facturation (CMI / CIH Pay)
-
-### 🚀 Phase 3 — Intelligence (Semaines 13-20)
-- [ ] Rapports hebdomadaires IA
-- [ ] Canal Instagram DM
-- [ ] PWA (notifications push)
-- [ ] A/B testing des prompts
-- [ ] Score churn automatique
-
----
-
-## 💰 Plans Tarifaires
-
-| | Starter | Pro | Scale |
-|---|---|---|---|
-| **Prix/mois** | 990 MAD | 2 490 MAD | 5 900 MAD |
-| **Conversations** | 500/mois | Illimité | Illimité |
-| **Canaux** | WhatsApp | WhatsApp + Email | Tous |
-| **Intégrations** | 1 | 3 | Illimité |
-| **Support** | Email 48h | WhatsApp 24h | Dédié 4h |
-
-Essai gratuit 14 jours — aucune carte de crédit requise.
-
----
-
-## 🔌 Intégrations Supportées
-
-### E-commerce
-- 🛍️ **Youcan** — Plateforme e-commerce marocaine (OAuth2)
-- 🏪 **Shopify** — OAuth2 + REST Admin API
-- 🌐 **WooCommerce** — REST API v3
-
-### Transporteurs
-- 🚚 **Amana Express** — Tracking temps réel
-- 📦 **J&T Express Maroc** — Tracking temps réel
-- 📮 **Marocpost / Chronopost** — Intégration v2
-
-### Paiement
-- 💳 **CMI** — Cartes bancaires marocaines
-- 💳 **CIH Pay** — Paiement digital
-
----
-
-## 🔒 Sécurité
-
-- Chiffrement AES-256-GCM pour les tokens API
-- JWT (access 15min + refresh 30j avec rotation)
-- Rate limiting par IP (100 req/min sur l'auth)
-- Isolation multi-tenant par `tenant_id`
-- TLS 1.3 minimum, headers HSTS, CSP
-- Données hébergées en Europe (RGPD)
-
----
-
-## 📊 KPIs Cibles (Année 1)
-
-| Métrique | Objectif M6 | Objectif M12 |
-|---|---|---|
-| Taux résolution automatique | > 75% | > 85% |
-| Temps de réponse moyen | < 5s | < 3s |
-| CSAT | > 4,0/5 | > 4,3/5 |
-| MRR | 50 000 MAD | 180 000 MAD |
-| Clients actifs | 30 | 100 |
-
----
-
-## 📄 Licence
-
-Propriétaire — Kalam SARL, Casablanca, Maroc 🇲🇦
-
----
-
-*Document mis à jour : Mai 2026 — Version 1.0*
-
-> 💬 **Contact** : hello@kalam.ma
+**Built by Antigravity for Kalam AI.**

@@ -1,168 +1,102 @@
-import styles from './Hero.module.css';
+'use client';
+
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
+const CHAT_SEQUENCE = [
+  { id: 1, type: 'user', text: 'Salam, wach kayna l jacket f taille L?', delay: 1500 },
+  { id: 2, type: 'agent', text: 'Wa alaykum salam! Oui kayna f L, bghitiha f noir wla beige? ✨', delay: 2500 },
+  { id: 3, type: 'user', text: 'Noir 3afak. Chhal lwa9t dyal livraison l Rabat?', delay: 2000 },
+  { id: 4, type: 'agent', text: 'Livraison l Rabat katakhod 24h m3a Amana Express. Ncreer lik commande daba?', delay: 3000 },
+];
 
 export default function Hero() {
+  const [visibleMessages, setVisibleMessages] = useState<typeof CHAT_SEQUENCE>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    const runSequence = async () => {
+      setVisibleMessages([]);
+      for (const msg of CHAT_SEQUENCE) {
+        if (msg.type === 'agent') {
+          setIsTyping(true);
+          await new Promise(resolve => setTimeout(resolve, 1200));
+          setIsTyping(false);
+        }
+        setVisibleMessages(prev => [...prev, msg]);
+        await new Promise(resolve => setTimeout(resolve, msg.delay));
+      }
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      setKey(prev => prev + 1);
+    };
+    runSequence();
+    return () => clearTimeout(timeoutId);
+  }, [key]);
+
   return (
-    <section className={styles.hero} id="hero">
-      <div className={`container ${styles.heroContainer}`}>
-        {/* Left — Text */}
-        <div className={styles.heroLeft}>
-          <div className="section-tag">
-            <span className="dot"></span>
-            Agent IA pour l&apos;e-commerce marocain
-          </div>
-
-          <h1 className={styles.heroTitle}>
-            Ton agent client qui{' '}
-            <span className={styles.highlight}>parle comme toi</span>
-          </h1>
-
-          <p className={styles.heroDesc}>
-            Réponds à tous tes clients sur WhatsApp en <strong>Darija, français et arabe</strong>,
-            24h/24 et 7j/7 — sans lever le petit doigt. Connecté à Youcan, Shopify et Amana.
-          </p>
-
-          {/* Stats row */}
-          <div className={styles.statsRow}>
-            <div className={styles.stat}>
-              <span className={styles.statNum}>&lt; 30s</span>
-              <span className={styles.statLabel}>Temps de réponse</span>
+    <section className="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden bg-white">
+      <div className="max-w-6xl mx-auto px-4 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10 mb-6">
+              <Sparkles className="w-3 h-3 text-primary" />
+              <span className="text-xs font-semibold text-primary uppercase tracking-wider">Built for Moroccan E-commerce</span>
             </div>
-            <div className={styles.statDivider}></div>
-            <div className={styles.stat}>
-              <span className={styles.statNum}>80%+</span>
-              <span className={styles.statLabel}>Messages auto-gérés</span>
-            </div>
-            <div className={styles.statDivider}></div>
-            <div className={styles.stat}>
-              <span className={styles.statNum}>4,7★</span>
-              <span className={styles.statLabel}>Satisfaction client</span>
+            <h1 className="text-4xl md:text-6xl font-semibold text-foreground leading-tight mb-6">
+              Automate your sales with <span className="text-primary">Superhuman AI</span>
+            </h1>
+            <p className="text-base text-gray-500 mb-8 max-w-lg font-medium leading-relaxed">
+              Kalam speaks fluent Darija, tracks orders in real-time, and closes sales 24/7. Connects to Shopify and YouCan in one click.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/signup" className="px-8 py-3 bg-primary text-white rounded-full font-semibold text-sm shadow-xl shadow-primary/20 hover:scale-105 transition-all flex items-center justify-center gap-2">
+                Start Free Trial
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
 
-          {/* CTAs */}
-          <div className={styles.ctaRow}>
-            <a href="/inscription" className="btn-primary" id="hero-cta-primary">
-              Commencer gratuitement
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </a>
-            <a href="#demo" className="btn-secondary" id="hero-cta-demo">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/>
-              </svg>
-              Voir la démo
-            </a>
-          </div>
-
-          <p className={styles.noCc}>✓ 14 jours gratuits · ✓ Aucune carte requise · ✓ Configuration en 20 min</p>
-        </div>
-
-        {/* Right — WhatsApp Mockup */}
-        <div className={styles.heroRight}>
-          {/* Floating badge — response time */}
-          <div className={`${styles.floatingBadge} ${styles.badgeTop}`}>
-            <div className={styles.badgeIcon}>⚡</div>
-            <div>
-              <div className={styles.badgeLabel}>Réponse automatique</div>
-              <div className={styles.badgeValue}>23 secondes</div>
-            </div>
-          </div>
-
-          {/* WhatsApp phone mockup */}
-          <div className={styles.phoneMockup}>
-            <div className={styles.phoneHeader}>
-              <div className={styles.phoneAvatar}>S</div>
-              <div className={styles.phoneInfo}>
-                <div className={styles.phoneName}>Salma · Agent Kalam</div>
-                <div className={styles.phoneStatus}>
-                  <span className={styles.statusDot}></span>
-                  En ligne
-                </div>
+          <div className="relative">
+            <div className="bg-white border border-border rounded-[2rem] shadow-2xl overflow-hidden max-w-md mx-auto">
+              <div className="bg-primary px-4 py-3 flex items-center gap-3">
+                 <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-semibold text-sm">K</div>
+                 <div className="flex-1">
+                    <h3 className="text-white font-semibold text-xs">Kalam AI Agent</h3>
+                    <div className="flex items-center gap-1.5">
+                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                       <span className="text-[10px] text-white/80 font-medium">Selling 24/7</span>
+                    </div>
+                 </div>
               </div>
-              <div className={styles.phoneIcons}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.43 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.89a16 16 0 0 0 6.2 6.2l.98-.98a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <div className="bg-gray-50 p-4 h-[350px] flex flex-col gap-3 overflow-y-auto">
+                <AnimatePresence initial={false}>
+                  {visibleMessages.map((msg) => (
+                    <motion.div
+                      key={`${key}-${msg.id}`}
+                      initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      className={`max-w-[85%] px-3 py-2 rounded-xl text-[13px] shadow-sm ${
+                        msg.type === 'user' ? 'self-start bg-white text-gray-800' : 'self-end bg-primary text-white'
+                      }`}
+                    >
+                      <p className="font-medium leading-snug">{msg.text}</p>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                {isTyping && (
+                  <div className="self-end bg-primary/20 px-3 py-2 rounded-xl text-[10px] font-semibold text-primary animate-pulse">
+                    AI is typing...
+                  </div>
+                )}
               </div>
-            </div>
-
-            <div className={styles.phoneMessages}>
-              {/* Customer message */}
-              <div className={`${styles.msg} ${styles.msgIn}`} style={{ animationDelay: '0.3s' }}>
-                <div className={styles.msgBubble}>
-                  Salam 👋 wach kayna jacket f taille M?
-                </div>
-                <div className={styles.msgTime}>19:42</div>
-              </div>
-
-              {/* AI response */}
-              <div className={`${styles.msg} ${styles.msgOut}`} style={{ animationDelay: '0.9s' }}>
-                <div className={styles.msgBubble}>
-                  Walaykum assalam! 😊 Ayeh kayna jacket M, bnin bzaf. Disponible f 3 couleurs: noir, beige w bleu marine. Bghi twjih lcommande daba?
-                </div>
-                <div className={styles.msgTime}>19:42 · ✓✓</div>
-              </div>
-
-              {/* Customer */}
-              <div className={`${styles.msg} ${styles.msgIn}`} style={{ animationDelay: '1.5s' }}>
-                <div className={styles.msgBubble}>
-                  Ayeh! w chhal delivery L7ed?
-                </div>
-                <div className={styles.msgTime}>19:43</div>
-              </div>
-
-              {/* AI response */}
-              <div className={`${styles.msg} ${styles.msgOut}`} style={{ animationDelay: '2.1s' }}>
-                <div className={styles.msgBubble}>
-                  Delivery L7ed kayna 🚀 — 35 DH. Twsslek f 48h m3a Amana. Bghi nbda lcommande dyal jacket M? Ay couleur?
-                </div>
-                <div className={styles.msgTime}>19:43 · ✓✓</div>
-              </div>
-
-              {/* Typing indicator */}
-              <div className={`${styles.msg} ${styles.msgIn} ${styles.typingMsg}`} style={{ animationDelay: '2.8s' }}>
-                <div className={styles.typingBubble}>
-                  <span className={styles.typingDot}></span>
-                  <span className={styles.typingDot}></span>
-                  <span className={styles.typingDot}></span>
-                </div>
-              </div>
-            </div>
-
-            {/* Input bar */}
-            <div className={styles.phoneInput}>
-              <div className={styles.inputField}>Écrire un message...</div>
-              <button className={styles.sendBtn}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Floating badge — auto resolved */}
-          <div className={`${styles.floatingBadge} ${styles.badgeBottom}`}>
-            <div className={`${styles.badgeIcon} ${styles.badgeIconGreen}`}>✓</div>
-            <div>
-              <div className={styles.badgeLabel}>Auto-résolu par Kalam</div>
-              <div className={styles.badgeValue}>Commande créée · #8432</div>
-            </div>
-          </div>
-
-          {/* Youcan integration chip */}
-          <div className={`${styles.floatingBadge} ${styles.badgeLeft}`}>
-            <span style={{ fontSize: '18px' }}>🛍️</span>
-            <div>
-              <div className={styles.badgeLabel}>Connecté à</div>
-              <div className={styles.badgeValue}>Youcan</div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Background decoration */}
-      <div className={styles.bgBlob1}></div>
-      <div className={styles.bgBlob2}></div>
     </section>
   );
 }
