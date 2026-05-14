@@ -43,10 +43,23 @@ export default function CatalogPage() {
     load();
   }, []);
 
+  const MOCK_PRODUCTS = [
+    { id: 'mock-1', name: 'Tapis Azilal Artisanal', price: 2400, stock: 3, image_url: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=2070&auto=format&fit=crop' },
+    { id: 'mock-2', name: 'Lanterne en Cuivre', price: 450, stock: 12, image_url: 'https://images.unsplash.com/photo-1534073828943-f801091bb18c?q=80&w=1974&auto=format&fit=crop' },
+    { id: 'mock-3', name: 'Caftan Royal Bleu', price: 1800, stock: 5, image_url: 'https://images.unsplash.com/photo-1585011664466-b7bcc905f991?q=80&w=1935&auto=format&fit=crop' },
+    { id: 'mock-4', name: 'Service à Thé Complet', price: 850, stock: 8, image_url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=1974&auto=format&fit=crop' }
+  ];
+
+  const displayProducts = products.length > 0 ? products : MOCK_PRODUCTS;
+
   const handleSync = async () => {
     setIsSyncing(true);
-    await syncCatalog();
-    await load();
+    const { success, error } = await syncCatalog();
+    if (success) {
+      await load();
+    } else {
+      alert(error);
+    }
     setIsSyncing(false);
   };
 
@@ -219,7 +232,7 @@ export default function CatalogPage() {
                </tr>
             </thead>
             <tbody className="divide-y divide-border">
-               {products.length > 0 ? products.map((p) => (
+               {displayProducts.length > 0 ? displayProducts.map((p) => (
                  <tr key={p.id} className="hover:bg-gray-50/50 transition-all group">
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-4">
@@ -227,7 +240,12 @@ export default function CatalogPage() {
                              {p.image_url ? <img src={p.image_url} alt="" className="w-full h-full object-cover" /> : <Package className="w-5 h-5 text-gray-300" />}
                           </div>
                           <div>
-                             <p className="text-xs font-bold text-foreground">{p.name}</p>
+                             <div className="flex items-center gap-2">
+                                <p className="text-xs font-bold text-foreground">{p.name}</p>
+                                {p.id.toString().startsWith('mock-') && (
+                                  <span className="text-[7px] font-black bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded uppercase tracking-widest border border-amber-200">Demo</span>
+                                )}
+                             </div>
                              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">ID: {p.id.slice(0,8)}</p>
                           </div>
                        </div>
