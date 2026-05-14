@@ -12,6 +12,7 @@ import {
   QrCode,
   Zap
 } from 'lucide-react';
+import { completeOnboarding } from '@/lib/actions/onboarding';
 import Link from 'next/link';
 
 const steps = [
@@ -23,8 +24,25 @@ const steps = [
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [platform, setPlatform] = useState('');
+  const [agentStyle, setAgentStyle] = useState('Friendly Darija');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
+  const handleNext = async () => {
+    if (currentStep === 3) {
+      setIsSubmitting(true);
+      try {
+        await completeOnboarding({ platform, agentStyle });
+        setCurrentStep(4);
+      } catch (error) {
+        console.error('Onboarding failed:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      setCurrentStep(prev => Math.min(prev + 1, 4));
+    }
+  };
+
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   return (
@@ -132,8 +150,18 @@ export default function OnboardingPage() {
                      { name: 'Professional Mix', desc: 'Polished French & Darija. Best for high-end fashion or electronics.' },
                      { name: 'Direct Sales', desc: 'Focused on closing orders quickly. Best for high-volume dropshipping.' },
                    ].map((style, i) => (
-                     <button key={i} className="w-full p-4 rounded-2xl border border-border bg-gray-50/50 hover:border-primary/40 hover:bg-white text-left transition-all group">
-                        <p className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">{style.name}</p>
+                     <button
+                       key={i}
+                       onClick={() => setAgentStyle(style.name)}
+                       className={`w-full p-4 rounded-2xl border transition-all text-left group ${
+                         agentStyle === style.name
+                           ? 'border-primary bg-primary/5'
+                           : 'border-border bg-gray-50/50 hover:border-primary/40 hover:bg-white'
+                       }`}
+                     >
+                        <p className={`text-xs font-bold transition-colors ${
+                          agentStyle === style.name ? 'text-primary' : 'text-foreground group-hover:text-primary'
+                        }`}>{style.name}</p>
                         <p className="text-[11px] text-gray-500 mt-1">{style.desc}</p>
                      </button>
                    ))}
@@ -175,11 +203,18 @@ export default function OnboardingPage() {
                   Back
                </button>
                <button 
-                 onClick={nextStep}
-                 className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-full text-xs font-bold shadow-lg shadow-primary/10 hover:bg-primary-dark transition-all"
+                 onClick={handleNext}
+                 disabled={isSubmitting || (currentStep === 1 && !platform)}
+                 className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-full text-xs font-bold shadow-lg shadow-primary/10 hover:bg-primary-dark transition-all disabled:opacity-50"
                >
-                  Next Step
-                  <ArrowRight className="w-4 h-4" />
+                 {isSubmitting ? (
+                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                 ) : currentStep === 3 ? (
+                   'Finish Setup'
+                 ) : (
+                   'Next Step'
+                 )}
+                 <ArrowRight className="w-4 h-4" />
                </button>
             </div>
           )}

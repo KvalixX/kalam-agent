@@ -1,18 +1,25 @@
 'use client';
 
+import { useActionState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Mail, 
-  Lock, 
-  ArrowRight, 
-  User, 
+import {
+  Mail,
+  Lock,
+  ArrowRight,
   Globe,
   MessageCircle,
-  Zap
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { signIn, type AuthState } from '@/lib/actions/auth';
 
 export default function LoginPage() {
+  const [state, action, isPending] = useActionState<AuthState, FormData>(
+    signIn,
+    null
+  );
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Orbs */}
@@ -34,7 +41,20 @@ export default function LoginPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 border border-border shadow-2xl shadow-primary/5 sm:rounded-[2rem] sm:px-10">
-          <form className="space-y-5" action="#" method="POST">
+          <form action={action} className="space-y-5">
+
+            {/* Error Message */}
+            {state?.error && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2.5 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2.5"
+              >
+                <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                <p className="text-xs font-medium text-rose-700">{state.error}</p>
+              </motion.div>
+            )}
+
             <div>
               <label htmlFor="email" className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
                 Email address
@@ -48,7 +68,8 @@ export default function LoginPage() {
                   name="email"
                   type="email"
                   required
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-border rounded-xl text-[13px] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+                  disabled={isPending}
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-border rounded-xl text-[13px] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all disabled:opacity-60"
                   placeholder="name@company.com"
                 />
               </div>
@@ -74,32 +95,32 @@ export default function LoginPage() {
                   name="password"
                   type="password"
                   required
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-border rounded-xl text-[13px] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+                  disabled={isPending}
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-border rounded-xl text-[13px] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all disabled:opacity-60"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-[12px] text-gray-500 font-medium">
-                Remember me for 30 days
-              </label>
-            </div>
-
             <div>
-              <Link
-                href="/dashboard"
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-lg shadow-primary/20 text-xs font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all flex items-center gap-2 group"
+              <button
+                id="login-submit-btn"
+                type="submit"
+                disabled={isPending}
+                className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-xl shadow-lg shadow-primary/20 text-xs font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all group disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Sign in to Dashboard
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+                {isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  <>
+                    Sign in to Dashboard
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </button>
             </div>
           </form>
 
@@ -116,15 +137,16 @@ export default function LoginPage() {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button className="w-full inline-flex justify-center py-2 px-4 border border-border rounded-xl bg-white text-[12px] font-bold text-gray-500 hover:bg-gray-50 transition-all flex items-center gap-2">
+              <button disabled className="w-full inline-flex justify-center items-center gap-2 py-2 px-4 border border-border rounded-xl bg-white text-[12px] font-bold text-gray-400 cursor-not-allowed opacity-50">
                 <Globe className="w-4 h-4" />
                 Google
               </button>
-              <button className="w-full inline-flex justify-center py-2 px-4 border border-border rounded-xl bg-[#25D366]/5 text-[#25D366] text-[12px] font-bold hover:bg-[#25D366]/10 transition-all border-[#25D366]/20 flex items-center gap-2">
-                <MessageCircle className="w-4 h-4 fill-current" />
+              <button disabled className="w-full inline-flex justify-center items-center gap-2 py-2 px-4 border border-border rounded-xl bg-white text-[12px] font-bold text-gray-400 cursor-not-allowed opacity-50">
+                <MessageCircle className="w-4 h-4" />
                 WhatsApp
               </button>
             </div>
+            <p className="text-center text-[10px] text-gray-400 font-medium mt-2">Coming soon</p>
           </div>
         </div>
 

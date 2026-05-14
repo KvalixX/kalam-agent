@@ -11,7 +11,6 @@ import {
   Search,
   Zap,
   Menu,
-  X,
   BookOpen,
   LifeBuoy,
   Gift,
@@ -26,8 +25,9 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { signOut } from '@/lib/actions/auth';
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
@@ -54,6 +54,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSigningOut, startSignOut] = useTransition();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -197,9 +198,14 @@ export default function DashboardLayout({
              </div>
           </div>
           
-          <button className="flex items-center gap-2 px-2.5 py-1.5 w-full text-xs font-medium text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+          <button
+            id="logout-btn"
+            disabled={isSigningOut}
+            onClick={() => startSignOut(() => signOut())}
+            className="flex items-center gap-2 px-2.5 py-1.5 w-full text-xs font-medium text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all disabled:opacity-50"
+          >
             <LogOut className="w-3.5 h-3.5" />
-            Logout
+            {isSigningOut ? 'Signing out...' : 'Logout'}
           </button>
         </div>
       </aside>
@@ -238,11 +244,11 @@ export default function DashboardLayout({
             <div className="h-5 w-px bg-border mx-1" />
             <div className="flex items-center gap-2">
                <div className="text-right hidden sm:block">
-                  <p className="text-xs font-semibold text-foreground leading-none">Amine E.</p>
-                  <p className="text-[8px] text-gray-400 font-medium uppercase mt-1">Darija Store</p>
+                  <p className="text-xs font-semibold text-foreground leading-none">Mon Compte</p>
+                  <p className="text-[8px] text-gray-400 font-medium uppercase mt-1">Kalam AI</p>
                </div>
                <div className="w-7 h-7 rounded bg-primary-light flex items-center justify-center text-primary font-semibold text-[10px]">
-                  A
+                  K
                </div>
             </div>
           </div>

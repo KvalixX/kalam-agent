@@ -18,23 +18,37 @@ export default function Hero() {
   const [key, setKey] = useState(0);
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let cancelled = false;
+    const wait = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
     const runSequence = async () => {
+      // Reset synchronously so old keys are gone before new ones appear
       setVisibleMessages([]);
+      setIsTyping(false);
+
       for (const msg of CHAT_SEQUENCE) {
+        if (cancelled) return;
         if (msg.type === 'agent') {
           setIsTyping(true);
-          await new Promise(resolve => setTimeout(resolve, 1200));
+          await wait(1200);
+          if (cancelled) return;
           setIsTyping(false);
         }
         setVisibleMessages(prev => [...prev, msg]);
-        await new Promise(resolve => setTimeout(resolve, msg.delay));
+        await wait(msg.delay);
+        if (cancelled) return;
       }
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      setKey(prev => prev + 1);
+
+      await wait(4000);
+      if (!cancelled) {
+        setVisibleMessages([]);
+        await wait(300);
+        setKey(prev => prev + 1);
+      }
     };
+
     runSequence();
-    return () => clearTimeout(timeoutId);
+    return () => { cancelled = true; };
   }, [key]);
 
   return (
@@ -73,10 +87,10 @@ export default function Hero() {
                  </div>
               </div>
               <div className="bg-gray-50 p-4 h-[350px] flex flex-col gap-3 overflow-y-auto">
-                <AnimatePresence initial={false}>
+                <AnimatePresence key={key} initial={false}>
                   {visibleMessages.map((msg) => (
                     <motion.div
-                      key={`${key}-${msg.id}`}
+                      key={msg.id}
                       initial={{ opacity: 0, scale: 0.9, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       className={`max-w-[85%] px-3 py-2 rounded-xl text-[13px] shadow-sm ${
