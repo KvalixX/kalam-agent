@@ -62,13 +62,13 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-foreground">Sba7 lkhir, {data?.merchant?.business_name || 'Hbibi'}! 👋</h1>
-          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">AI AGENT PERFORMANCE OVERVIEW</p>
+          <h1 className="text-base font-bold text-foreground">Sba7 lkhir, {data?.merchant?.business_name || 'Hbibi'}! 👋</h1>
+          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Performance Overview</p>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
         {stats.map((stat: any, i: number) => {
           const Icon = iconMap[stat.icon] || MessageSquare;
           return (
@@ -77,92 +77,92 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-white border border-border p-3.5 rounded-xl shadow-sm hover:shadow-md transition-all group"
+              className="bg-white border border-border p-2.5 rounded-lg shadow-sm hover:shadow-md transition-all group"
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-7 h-7 rounded bg-primary/5 text-primary flex items-center justify-center">
-                  <Icon className="w-3.5 h-3.5" />
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="w-6 h-6 rounded bg-primary/5 text-primary flex items-center justify-center">
+                  <Icon className="w-3 h-3" />
                 </div>
                 <span className={cn(
-                  "text-[8px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-tighter",
+                  "text-[7px] font-bold px-1 py-0.2 rounded uppercase tracking-tighter",
                   stat.trend.startsWith('+') ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
                 )}>
                   {stat.trend}
                 </span>
               </div>
               <div>
-                <p className="text-[8px] font-semibold text-gray-400 uppercase tracking-widest">{stat.label}</p>
-                <h3 className="text-lg font-semibold text-foreground tracking-tight">{stat.value}</h3>
+                <p className="text-[7px] font-bold text-gray-400 uppercase tracking-widest">{stat.label}</p>
+                <h3 className="text-base font-bold text-foreground tracking-tight">{stat.value}</h3>
               </div>
             </motion.div>
           );
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
         {/* Main Chart Card */}
-        <div className="lg:col-span-2 bg-white border border-border rounded-xl p-4 shadow-sm">
-           <div className="flex items-center justify-between mb-4">
+        <div className="lg:col-span-2 bg-white border border-border rounded-lg p-3 shadow-sm">
+           <div className="flex items-center justify-between mb-3">
               <div>
-                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-tight">Sales Performance</h3>
-                 <p className="text-[9px] text-gray-400 font-medium uppercase tracking-widest">Revenue automated vs Manual</p>
+                 <h3 className="text-[11px] font-bold text-foreground uppercase tracking-tight">Sales Performance</h3>
+                 <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest">Revenue Growth</p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span className="text-[8px] font-medium text-gray-400 uppercase tracking-tighter">AI Sales</span>
+                    <div className="w-1 h-1 rounded-full bg-primary" />
+                    <span className="text-[7px] font-bold text-gray-400 uppercase">AI Sales</span>
                  </div>
                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
-                    <span className="text-[8px] font-medium text-gray-400 uppercase tracking-tighter">Manual</span>
+                    <div className="w-1 h-1 rounded-full bg-gray-200" />
+                    <span className="text-[7px] font-bold text-gray-400 uppercase">Manual</span>
                  </div>
               </div>
            </div>
            
-           <div className="h-40 w-full bg-gray-50 rounded-lg border border-dashed border-gray-200 flex items-center justify-center">
+           <div className="h-32 w-full bg-gray-50 rounded-md border border-dashed border-gray-200 flex items-center justify-center">
               <div className="flex flex-col items-center gap-1 text-gray-300">
-                 <TrendingUp className="w-5 h-5 opacity-30" />
-                 <span className="text-[9px] font-medium uppercase">Chart data will sync as sales arrive</span>
+                 <TrendingUp className="w-4 h-4 opacity-30" />
+                 <span className="text-[8px] font-bold uppercase">Chart data will sync as sales arrive</span>
               </div>
            </div>
         </div>
 
         {/* Recent Activity Card */}
-        <div className="bg-white border border-border rounded-xl p-4 shadow-sm">
-           <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-tight">Recent Chats</h3>
-              <button className="text-[9px] font-semibold text-primary hover:underline uppercase tracking-widest">View All</button>
+        <div className="bg-white border border-border rounded-lg p-3 shadow-sm">
+           <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[11px] font-bold text-foreground uppercase tracking-tight">Recent Chats</h3>
+              <button className="text-[8px] font-bold text-primary hover:underline uppercase tracking-widest">View All</button>
            </div>
            
-           <div className="space-y-3">
+           <div className="space-y-2">
               {recentChats.length > 0 ? recentChats.map((chat: any) => (
-                <div key={chat.id} className="flex items-start gap-2.5 group cursor-pointer border-b border-gray-50 pb-2.5 last:border-0 last:pb-0">
-                   <div className="w-7 h-7 rounded bg-gray-100 flex items-center justify-center text-gray-400 font-semibold text-[10px] shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
+                <div key={chat.id} className="flex items-start gap-2 group cursor-pointer border-b border-gray-50 pb-2 last:border-0 last:pb-0">
+                   <div className="w-6 h-6 rounded bg-gray-100 flex items-center justify-center text-gray-400 font-bold text-[9px] shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
                       {chat.name[0]}
                    </div>
                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-0.5">
-                         <span className="text-xs font-semibold text-foreground truncate">{chat.name}</span>
-                         <span className="text-[8px] text-gray-400 font-medium">{chat.time}</span>
+                      <div className="flex items-center justify-between mb-0">
+                         <span className="text-[11px] font-bold text-foreground truncate">{chat.name}</span>
+                         <span className="text-[7px] text-gray-400 font-bold">{chat.time}</span>
                       </div>
-                      <p className="text-[10px] text-gray-500 truncate mb-1">{chat.message}</p>
+                      <p className="text-[10px] text-gray-500 truncate mb-0.5">{chat.message}</p>
                       <div className="flex items-center gap-2">
                          <span className={cn(
-                           "text-[7px] font-semibold px-1 py-0.5 rounded uppercase tracking-tighter",
+                           "text-[7px] font-bold px-1 py-0.1 rounded uppercase tracking-tighter",
                            chat.status === 'AI Handled' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
                          )}>
                             {chat.status}
                          </span>
                          {chat.revenue !== '--' && (
-                           <span className="text-[8px] font-semibold text-emerald-600">+{chat.revenue}</span>
+                           <span className="text-[7px] font-bold text-emerald-600">+{chat.revenue}</span>
                          )}
                       </div>
                    </div>
                 </div>
               )) : (
-                <div className="flex flex-col items-center justify-center h-32 text-gray-300 gap-2">
-                  <MessageSquare className="w-6 h-6 opacity-20" />
-                  <p className="text-[9px] font-medium uppercase">No conversations yet</p>
+                <div className="flex flex-col items-center justify-center h-24 text-gray-300 gap-1">
+                   <MessageSquare className="w-4 h-4 opacity-20" />
+                   <p className="text-[8px] font-bold uppercase tracking-widest">No conversations yet</p>
                 </div>
               )}
            </div>
