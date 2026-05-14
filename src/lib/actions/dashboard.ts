@@ -156,11 +156,43 @@ export async function syncCatalog() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: 'Unauthorized' };
 
-  // Here we would normally call Shopify/YouCan API
-  // For now, we'll just simulate a delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  // 1. Get Merchant Credentials from DB
+  const { data: merchant } = await supabase
+    .from('merchants')
+    .select('ecommerce_platform, ecommerce_shop_name, ecommerce_token')
+    .eq('id', user.id)
+    .single();
+
+  if (!merchant?.ecommerce_token) return { error: 'No e-commerce token configured' };
+
+  const platform = merchant.ecommerce_platform || 'Shopify';
+  const shopName = merchant.ecommerce_shop_name;
+  const accessToken = merchant.ecommerce_token;
+
+  let products = [];
+
+  if (platform === 'Shopify') {
+    const { getShopifyProducts } = await import('@/lib/ecommerce/shopify');
+    products = await getShopifyProducts(shopName, accessToken);
+  } else if (platform === 'YouCan') {
+    // YouCan sync logic could go here
+    return { error: 'YouCan sync not yet implemented' };
+  }
+
+  if (!products || products.length === 0) return { error: 'No products found' };
+
+  // 2. Upsert into Supabase
+  for (const product of products) {
+    await supabase.from('products').upsert({
+      merchant_id: user.id,
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      image_url: product.image_url,
+    }, { onConflict: 'merchant_id, name' });
+  }
   
-  return { success: true };
+  return { success: true, count: products.length };
 }
 
 // 7. Knowledge Base

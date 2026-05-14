@@ -23,6 +23,11 @@ export default function SettingsPage() {
   const [style, setStyle] = useState('natural');
   const [autoUpsell, setAutoUpsell] = useState(false);
   const [phone, setPhone] = useState('');
+  
+  // E-commerce state
+  const [platform, setPlatform] = useState('Shopify');
+  const [shopName, setShopName] = useState('');
+  const [token, setToken] = useState('');
 
   const load = async () => {
     const data = await getMerchantSettings();
@@ -32,6 +37,10 @@ export default function SettingsPage() {
       setStyle(config?.style || 'natural');
       setAutoUpsell(config?.auto_upsell || false);
       setPhone(data.whatsapp_phone_number || '');
+      
+      setPlatform(data.ecommerce_platform || 'Shopify');
+      setShopName(data.ecommerce_shop_name || '');
+      setToken(data.ecommerce_token || '');
     }
     setIsLoading(false);
   };
@@ -43,7 +52,12 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setIsSaving(true);
     startTransition(async () => {
-      await updateMerchantSettings({ whatsapp_phone_number: phone });
+      await updateMerchantSettings({ 
+        whatsapp_phone_number: phone,
+        ecommerce_platform: platform,
+        ecommerce_shop_name: shopName,
+        ecommerce_token: token
+      });
       await updateAgentConfig({ style, auto_upsell: autoUpsell });
       await load();
       setIsSaving(false);
@@ -150,33 +164,58 @@ export default function SettingsPage() {
 
         {/* E-commerce Platforms */}
         <div className="bg-white border border-border rounded-xl p-4 shadow-sm md:col-span-2">
-           <div className="flex items-center justify-between mb-4">
+           <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
                     <Store className="w-4 h-4" />
                  </div>
                  <div>
-                    <h3 className="text-xs font-semibold text-foreground">Connected Store</h3>
-                    <p className="text-[10px] text-gray-500 font-medium uppercase tracking-tight">Sync Platform</p>
+                    <h3 className="text-xs font-semibold text-foreground">Store Integration</h3>
+                    <p className="text-[10px] text-gray-500 font-medium uppercase tracking-tight">Connect your catalog</p>
                  </div>
               </div>
            </div>
            
-           <div className="border border-border rounded-xl p-4 flex items-center justify-between bg-gray-50/50">
-              <div className="flex items-center gap-4">
-                 <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-border">
-                    <Store className="w-6 h-6 text-gray-400" />
-                 </div>
-                 <div>
-                    <p className="text-[12px] font-bold text-foreground uppercase tracking-tight">{merchant?.platform || 'YouCan'} Store</p>
-                    <p className="text-[10px] text-gray-400 font-medium">Auto-syncing every 30 minutes</p>
-                 </div>
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-1.5">
+                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Platform</label>
+                 <select 
+                   value={platform}
+                   onChange={(e) => setPlatform(e.target.value)}
+                   className="w-full px-3 py-2.5 bg-gray-50 border border-border rounded-xl text-xs outline-none focus:ring-2 focus:ring-primary/10 transition-all"
+                 >
+                    <option value="Shopify">Shopify</option>
+                    <option value="YouCan">YouCan.shop</option>
+                 </select>
               </div>
-              <div className="flex items-center gap-3">
-                 <span className="text-[9px] font-black bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-200">
-                    Active
-                 </span>
-                 <ExternalLink className="w-4 h-4 text-gray-300" />
+              <div className="space-y-1.5">
+                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{platform === 'Shopify' ? 'Shop Name' : 'Shop ID'}</label>
+                 <input 
+                   value={shopName}
+                   onChange={(e) => setShopName(e.target.value)}
+                   placeholder={platform === 'Shopify' ? 'kalam-demo' : 'Store name...'}
+                   className="w-full px-3 py-2.5 bg-gray-50 border border-border rounded-xl text-xs outline-none focus:ring-2 focus:ring-primary/10 transition-all"
+                 />
+              </div>
+              <div className="space-y-1.5">
+                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Access Token</label>
+                 <input 
+                   type="password"
+                   value={token}
+                   onChange={(e) => setToken(e.target.value)}
+                   placeholder="shpat_..."
+                   className="w-full px-3 py-2.5 bg-gray-50 border border-border rounded-xl text-xs outline-none focus:ring-2 focus:ring-primary/10 transition-all"
+                 />
+              </div>
+           </div>
+           
+           <div className="mt-6 pt-6 border-t border-border flex items-center justify-between">
+              <p className="text-[10px] text-gray-400 font-medium leading-relaxed max-w-md">
+                 After saving, go to the <span className="font-bold text-foreground">Catalog</span> page and click "Sync Now" to import your products.
+              </p>
+              <div className="flex items-center gap-2">
+                 <span className={`w-2 h-2 rounded-full ${token ? 'bg-emerald-500' : 'bg-gray-300'}`} />
+                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{token ? 'Configured' : 'Not Linked'}</span>
               </div>
            </div>
         </div>

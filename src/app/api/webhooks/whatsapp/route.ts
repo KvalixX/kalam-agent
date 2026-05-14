@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { generateResponse } from '@/lib/ai/anthropic';
-import { getSystemPrompt } from '@/lib/ai/prompts';
+import { processAiResponse } from '@/lib/ai/anthropic';
 
 // Meta Webhook Verification (GET)
 export async function GET(req: Request) {
@@ -30,29 +29,24 @@ export async function POST(req: Request) {
     
     // Check if it's a WhatsApp message
     const message = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-    
-    if (!message) {
-      return NextResponse.json({ status: 'ignored' });
-    }
+    if (!message) return NextResponse.json({ status: 'ignored' });
 
     const customerPhone = message.from;
     const messageText = message.text?.body;
     const merchantPhone = body.entry?.[0]?.changes?.[0]?.value?.metadata?.display_phone_number;
 
-    if (!messageText) {
-      return NextResponse.json({ status: 'no_text' });
-    }
+    if (!messageText) return NextResponse.json({ status: 'no_text' });
 
     const supabase = await createClient();
 
     // 1. Identify Merchant
-    const { data: merchant, error: merchantError } = await supabase
+    const { data: merchant } = await supabase
       .from('merchants')
-      .select('*, agent_configs(*)')
+      .select('*')
       .eq('whatsapp_number', merchantPhone)
       .single();
 
-    if (merchantError || !merchant) {
+    if (!merchant) {
       console.error('Merchant not found for phone:', merchantPhone);
       return NextResponse.json({ status: 'merchant_not_found' });
     }
@@ -71,75 +65,76 @@ export async function POST(req: Request) {
         .insert({
           merchant_id: merchant.id,
           phone: customerPhone,
-          name: 'Nouveau Client',
+          name: body.entry?.[0]?.changes?.[0]?.value?.contacts?.[0]?.profile?.name || 'Client WhatsApp',
         })
         .select()
         .single();
       customer = newCustomer;
     }
 
-    // 3. Get Conversation History
-    const { data: conversations } = await supabase
+    // 3. Find or Create Conversation
+    let { data: conversation } = await supabase
       .from('conversations')
       .select('*')
       .eq('merchant_id', merchant.id)
       .eq('customer_id', customer?.id)
-      .order('created_at', { ascending: false })
-      .limit(5);
+      .eq('status', 'active')
+      .single();
 
-    // 4. Get Order Context (if relevant)
-    let orderContext = "No recent order found.";
-    const isAskingAboutOrder = /order|commande|suivi|finahwa|finkom|ach wqa3|status/i.test(messageText);
-
-    if (isAskingAboutOrder) {
-      // Mocked merchant platform and token (this would come from merchant table)
-      const platform = merchant.sector; // Using sector field for now
-      const token = process.env.ECOMMERCE_ACCESS_TOKEN; 
-
-      if (platform === 'YouCan' && token) {
-        const { findYouCanOrderByPhone, formatYouCanStatus } = await import('@/lib/ecommerce/youcan');
-        const order = await findYouCanOrderByPhone(token, customerPhone);
-        if (order) {
-          orderContext = `Order #${order.order_number}: Status is ${formatYouCanStatus(order.status)}. Total: ${order.total} MAD. Created at: ${order.created_at}.`;
-        }
-      } else if (platform === 'Shopify' && token) {
-        const { findShopifyOrderByPhone } = await import('@/lib/ecommerce/shopify');
-        const order = await findShopifyOrderByPhone('kalam-demo', token, customerPhone);
-        if (order) {
-          orderContext = `Order #${order.order_number}: Status is ${order.financial_status}/${order.fulfillment_status}. Total: ${order.total_price} ${order.currency}.`;
-        }
-      }
+    if (!conversation) {
+      const { data: newConv } = await supabase
+        .from('conversations')
+        .insert({
+          merchant_id: merchant.id,
+          customer_id: customer?.id,
+          channel: 'whatsapp',
+          status: 'active',
+          last_message_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+      conversation = newConv;
     }
 
-    // 5. Generate AI Response
-    const config = merchant.agent_configs?.[0] || {};
-    const systemPrompt = getSystemPrompt({
-      business_name: merchant.business_name,
-      agent_name: config.agent_name || 'Kalam Assistant',
-      return_policy: config.return_policy,
-      delivery_policy: config.delivery_policy,
-    }) + `\n\nCUSTOMER ORDER CONTEXT: ${orderContext}`;
-
-    // Mock history for now
-    const messages = [
-      { role: 'user', content: messageText }
-    ];
-
-    const aiResponse = await generateResponse(messages, systemPrompt);
-
-    // 5. Send WhatsApp Message
-    const { sendWhatsAppMessage } = await import('@/lib/whatsapp');
-    await sendWhatsAppMessage(customerPhone, aiResponse);
-
-    // 6. Log Conversation
-    await supabase.from('conversations').insert({
-      merchant_id: merchant.id,
-      customer_id: customer?.id,
-      channel: 'whatsapp',
-      status: 'active',
+    // 4. Save Customer Message
+    await supabase.from('messages').insert({
+      conversation_id: conversation?.id,
+      text: messageText,
+      type: 'customer'
     });
 
-    return NextResponse.json({ status: 'success', response: aiResponse });
+    // 5. Get History for AI
+    const { data: history } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', conversation?.id)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    // 6. Generate AI Response
+    const aiResponse = await processAiResponse(merchant.id, customer?.id || '', messageText, history?.reverse() || []);
+
+    // 7. Send WhatsApp Message (Real API Call)
+    const { sendWhatsAppMessage } = await import('@/lib/whatsapp');
+    try {
+      await sendWhatsAppMessage(customerPhone, aiResponse);
+    } catch (apiError) {
+      console.error('WhatsApp Send Error:', apiError);
+    }
+
+    // 8. Save AI Message
+    await supabase.from('messages').insert({
+      conversation_id: conversation?.id,
+      text: aiResponse,
+      type: 'agent'
+    });
+
+    // 9. Update Conversation
+    await supabase.from('conversations').update({
+      last_message_at: new Date().toISOString()
+    }).eq('id', conversation?.id);
+
+    return NextResponse.json({ status: 'success' });
 
   } catch (error) {
     console.error('Webhook Error:', error);

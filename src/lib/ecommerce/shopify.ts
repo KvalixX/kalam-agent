@@ -31,3 +31,30 @@ export async function findShopifyOrderByPhone(shopName: string, accessToken: str
     return orderPhone === normalizedSearch;
   });
 }
+
+export async function getShopifyProducts(shopName: string, accessToken: string) {
+  const url = `https://${shopName}.myshopify.com/admin/api/2024-04/products.json`;
+  
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'X-Shopify-Access-Token': accessToken,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) throw new Error(`Shopify API error: ${response.statusText}`);
+
+    const data = await response.json();
+    return data.products.map((p: any) => ({
+      name: p.title,
+      price: p.variants[0]?.price || 0,
+      stock: p.variants[0]?.inventory_quantity || 0,
+      image_url: p.image?.src || null,
+      external_id: p.id.toString()
+    }));
+  } catch (error) {
+    console.error('Error fetching Shopify products:', error);
+    return [];
+  }
+}
