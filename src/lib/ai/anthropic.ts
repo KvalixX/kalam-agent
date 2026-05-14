@@ -56,8 +56,14 @@ IMPORTANT:
 `;
 
   // 5. Call Anthropic
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return "Smah lia, had l'agent baqi makhdamch 100% (Missing API Key).";
+  const isPlaceholder = !process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY.includes('your-real-key');
+
+  if (isPlaceholder) {
+    // MOCK RESPONSE for testing without real key
+    if (messageText.toLowerCase().includes('catalog') || messageText.toLowerCase().includes('chno 3ndkom')) {
+      return `Ahlan! 3ndna had l-khirat l-youma:\n${productContext}\n\nWash bghiti n3awnk f chi haja khra? ✨`;
+    }
+    return "Ahlan! Ana Kalam AI. Kifach n9der n3awnk? (Note: Using Mock Mode because API Key is not set).";
   }
 
   try {
@@ -76,8 +82,12 @@ IMPORTANT:
 
     // @ts-ignore
     return response.content[0].text;
-  } catch (error) {
-    console.error('AI Processing Error:', error);
+  } catch (error: any) {
+    console.error('AI Processing Error:', error.message);
+    // Even on error, try to give a helpful mock response instead of failing
+    if (products && products.length > 0) {
+      return `Smah lia, wa9e3 chi mouchkil m3a Claude. Walakin rah 3ndna:\n${productContext}\n\nNchof m3a l'moul l'ma7al o nrje3 3ndk.`;
+    }
     return "Smah lia, wa9e3 chi mouchkil sghir. Nchof m3a l'moul l'ma7al o nrje3 3ndk.";
   }
 }

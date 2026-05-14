@@ -273,8 +273,10 @@ export async function updateMerchantSettings(payload: any) {
 
   const { error } = await supabase
     .from('merchants')
-    .update(payload)
-    .eq('id', user.id);
+    .upsert({ 
+      ...payload, 
+      id: user.id 
+    });
 
   return { error };
 }
@@ -286,8 +288,10 @@ export async function updateAgentConfig(payload: any) {
 
   const { error } = await supabase
     .from('agent_configs')
-    .update(payload)
-    .eq('merchant_id', user.id);
+    .upsert({ 
+      ...payload, 
+      merchant_id: user.id 
+    });
 
   return { error };
 }

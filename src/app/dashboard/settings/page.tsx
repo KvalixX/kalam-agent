@@ -36,7 +36,7 @@ export default function SettingsPage() {
       const config = data.agent_configs?.[0];
       setStyle(config?.style || 'natural');
       setAutoUpsell(config?.auto_upsell || false);
-      setPhone(data.whatsapp_phone_number || '');
+      setPhone(data.whatsapp_number || '');
       
       setPlatform(data.ecommerce_platform || 'Shopify');
       setShopName(data.ecommerce_shop_name || '');
@@ -52,13 +52,21 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setIsSaving(true);
     startTransition(async () => {
-      await updateMerchantSettings({ 
-        whatsapp_phone_number: phone,
+      const res1 = await updateMerchantSettings({ 
+        whatsapp_number: phone,
         ecommerce_platform: platform,
         ecommerce_shop_name: shopName,
         ecommerce_token: token
       });
-      await updateAgentConfig({ style, auto_upsell: autoUpsell });
+      const res2 = await updateAgentConfig({ style, auto_upsell: autoUpsell });
+      
+      if (res1?.error) alert('Error saving merchant: ' + res1.error.message);
+      if (res2?.error) alert('Error saving agent: ' + res2.error.message);
+      
+      if (!res1?.error && !res2?.error) {
+        alert('Settings saved successfully! ✅');
+      }
+      
       await load();
       setIsSaving(false);
     });

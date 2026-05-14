@@ -213,12 +213,14 @@ export default function ChatsPage() {
                   <div key={msg.id} className={cn("flex", msg.type === 'user' ? 'justify-start' : 'justify-end')}>
                      <div className={cn(
                        "max-w-[80%] p-3 rounded-2xl text-[12px] shadow-sm relative",
-                       msg.type === 'user' ? 'bg-white border border-border rounded-tl-none' : 'bg-primary text-white rounded-tr-none'
+                       msg.type === 'user' 
+                         ? 'bg-white border border-border rounded-tl-none' 
+                         : 'bg-[#25D366] text-white rounded-tr-none'
                      )}>
                         <p className="leading-relaxed font-medium">{msg.text}</p>
                         <p className={cn(
-                          "text-[8px] mt-2 font-bold uppercase tracking-tighter opacity-50",
-                          msg.type === 'user' ? 'text-gray-400' : 'text-white text-right'
+                          "text-[8px] mt-2 font-bold uppercase tracking-tighter opacity-70",
+                          msg.type === 'user' ? 'text-gray-400' : 'text-white/80 text-right'
                         )}>
                           {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>

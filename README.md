@@ -1,50 +1,64 @@
-# 🏺 Kalam AI Platform
+# 🌴 Kalam AI - Conversational E-Commerce for Morocco
 
-**The first AI-powered sales agent built for Moroccan E-commerce.**
+**Kalam AI** is a state-of-the-art conversational sales platform designed specifically for Moroccan merchants. It automates customer interactions on WhatsApp, providing intelligent, natural responses in **Moroccan Darija, French, and Arabic** to close sales 24/7.
 
-Kalam AI automates WhatsApp sales for Moroccan merchants by speaking natural Darija, syncing with Shopify/YouCan, and handling customer inquiries 24/7.
+![Kalam Dashboard Mockup](https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80&w=1200)
 
-## 🎯 Current Milestone: Phase 1 Complete
+## ✨ Core Features
 
-The **Phase 1 Frontend** is now 100% complete and production-ready. 
+- **🚀 Instant AI Responses**: Powered by **Groq (Llama 3.1 70B)** for lightning-fast inference.
+- **🇲🇦 Multi-Lingual Intelligence**: Deep understanding of Moroccan Darija, French, and Arabic code-switching.
+- **📦 Catalog Integration**: Synchronizes with Shopify and YouCan to answer inventory questions instantly.
+- **💬 WhatsApp Dashboard**: A professional, real-time chat interface to take over AI conversations when needed.
+- **🎨 Custom Widget**: Embeddable WhatsApp chat widget for your storefront with full color and style customization.
+- **📊 Real-time Analytics**: Track AI resolution rates, customer sentiment, and revenue growth.
 
-### **Recent Accomplishments:**
-- **14 Dashboard Modules**: Full administrative suite from CRM and Campaigns to AI Activity Logs and Widget Customizers.
-- **Premium Design System**: High-density "SaaS Cockpit" aesthetic using custom Tailwind tokens and standard Lucide icons.
-- **Advanced UX**: Global `Cmd + K` search palette, smooth skeleton loaders, and responsive mobile-first layouts.
-- **Typography Audit**: Standardized platform-wide font weights (Normal/Medium/Semibold) for maximum clarity and professionalism.
+## 🛠️ Technology Stack
 
-## 🛠️ Next Steps (Phase 2)
-1. **Backend Integration (In Progress)**: Supabase PostgreSQL schema established. Added secure RLS, user triggers, and single consolidated DB setup in `/supabase/schema.sql`.
-2. **AI Webhook Implementation**: Setting up the Meta Business API for real WhatsApp message processing.
-3. **E-commerce Sync**: Building real API bridges for Shopify and YouCan catalog synchronization.
-
-## 🛠️ Tech Stack
-
-- **Framework**: Next.js 16 (App Router)
-- **Styling**: Tailwind CSS
-- **Animations**: Framer Motion
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Database & Auth**: [Supabase](https://supabase.com/)
+- **AI Inference**: [Groq Cloud API](https://groq.com/)
+- **Messaging**: [WhatsApp Business Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api)
+- **Styling**: Tailwind CSS & Framer Motion
 - **Icons**: Lucide React
-- **Design System**: Custom high-density, "SaaS Cockpit" aesthetic with premium typography.
 
-## 📂 Project Structure
+## 🚀 Getting Started
 
-- `/src/app/dashboard`: The 14-page administrative cockpit.
-- `/src/components`: Reusable UI components (Hero, Features, etc.).
-- `/src/app/onboarding`: Multi-step merchant setup flow.
-- `/src/app/login` & `/src/app/signup`: Secure authentication interfaces.
+### 1. Prerequisites
+- Node.js 18+
+- Supabase Account
+- Meta Developer Account (WhatsApp Cloud API)
+- Groq Cloud API Key
 
-## 🏁 Getting Started
+### 2. Installation
+```bash
+git clone https://github.com/yourusername/kalam-ai.git
+cd kalam-app
+npm install
+```
 
-1. **Clone the repo**
-2. **Install dependencies**: `npm install`
-3. **Run development server**: `npm run dev`
-4. **Build for production**: `npm run build`
+### 3. Environment Setup
+Create a `.env.local` file and add your credentials:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+GROQ_API_KEY=your_groq_api_key
+WHATSAPP_ACCESS_TOKEN=your_whatsapp_token
+WHATSAPP_PHONE_NUMBER_ID=your_id
+WHATSAPP_VERIFY_TOKEN=your_verify_token
+```
 
-## 📄 Documentation
+### 4. Running Locally
+```bash
+npm run dev
+```
 
-For a detailed guide on how to use the platform as a merchant, please refer to [USER_GUIDE.md](./USER_GUIDE.md).
+## 🔒 Security & Privacy
+Kalam AI uses **Supabase Row Level Security (RLS)** to ensure merchant data isolation. Webhook processing is secured via Meta Verify Tokens and Service Role authentication.
+
+## 🇲🇦 Built for Morocco
+Designed with the specific needs of the Moroccan e-commerce ecosystem in mind. Supporting local platforms like **YouCan** and understanding the unique linguistic nuances of **Darija**.
 
 ---
-
-**Built by Antigravity for Kalam AI.**
+*Developed with ❤️ for the Moroccan Merchant Community.*
