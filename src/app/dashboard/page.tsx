@@ -11,59 +11,80 @@ import {
   MoreVertical
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
+import { getDashboardStats } from '@/lib/actions/dashboard';
 
-const stats = [
-  { label: 'Conversations', value: '1,242', trend: '+12.5%', icon: MessageSquare, color: 'text-blue-600', bg: 'bg-blue-50' },
-  { label: 'Revenue Automated', value: '42,900 MAD', trend: '+18.2%', icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  { label: 'Avg. Response Time', value: '2.4s', trend: '-0.4s', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
-  { label: 'Orders Placed', value: '312', trend: '+8.1%', icon: ShoppingBag, color: 'text-purple-600', bg: 'bg-purple-50' },
-];
-
-const recentChats = [
-  { id: 1, name: 'Youssef B.', message: 'Wach kayna f taille L?', time: '2m ago', status: 'AI Handled', revenue: '450 MAD' },
-  { id: 2, name: 'Sara K.', message: 'Sift liya tracking dyal Amana 3afak', time: '15m ago', status: 'AI Handled', revenue: '--' },
-  { id: 3, name: 'Ahmed M.', message: 'Bghit nrejou3 wahd lcommande', time: '1h ago', status: 'Needs Human', revenue: '--' },
-  { id: 4, name: 'Leila Z.', message: 'Finahwa lmagasin dyalkom f Casa?', time: '3h ago', status: 'AI Handled', revenue: '1,200 MAD' },
-];
+const iconMap: Record<string, any> = {
+  MessageSquare,
+  DollarSign,
+  Clock,
+  ShoppingBag
+};
 
 export default function DashboardPage() {
+  const [data, setData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      const stats = await getDashboardStats();
+      setData(stats);
+      setIsLoading(false);
+    }
+    loadStats();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const stats = data?.stats || [];
+  const recentChats = data?.recentChats || [];
+
   return (
     <div className="space-y-4">
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-foreground">Sba7 lkhir! 👋</h1>
+          <h1 className="text-lg font-semibold text-foreground">Sba7 lkhir, {data?.merchant?.business_name || 'Hbibi'}! 👋</h1>
           <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">AI AGENT PERFORMANCE OVERVIEW</p>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="bg-white border border-border p-3.5 rounded-xl shadow-sm hover:shadow-md transition-all group"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className={`w-7 h-7 rounded ${stat.bg} ${stat.color} flex items-center justify-center`}>
-                <stat.icon className="w-3.5 h-3.5" />
+        {stats.map((stat: any, i: number) => {
+          const Icon = iconMap[stat.icon] || MessageSquare;
+          return (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="bg-white border border-border p-3.5 rounded-xl shadow-sm hover:shadow-md transition-all group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-7 h-7 rounded bg-primary/5 text-primary flex items-center justify-center">
+                  <Icon className="w-3.5 h-3.5" />
+                </div>
+                <span className={cn(
+                  "text-[8px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-tighter",
+                  stat.trend.startsWith('+') ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
+                )}>
+                  {stat.trend}
+                </span>
               </div>
-              <span className={cn(
-                "text-[8px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-tighter",
-                stat.trend.startsWith('+') ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
-              )}>
-                {stat.trend}
-              </span>
-            </div>
-            <div>
-              <p className="text-[8px] font-semibold text-gray-400 uppercase tracking-widest">{stat.label}</p>
-              <h3 className="text-lg font-semibold text-foreground tracking-tight">{stat.value}</h3>
-            </div>
-          </motion.div>
-        ))}
+              <div>
+                <p className="text-[8px] font-semibold text-gray-400 uppercase tracking-widest">{stat.label}</p>
+                <h3 className="text-lg font-semibold text-foreground tracking-tight">{stat.value}</h3>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -89,7 +110,7 @@ export default function DashboardPage() {
            <div className="h-40 w-full bg-gray-50 rounded-lg border border-dashed border-gray-200 flex items-center justify-center">
               <div className="flex flex-col items-center gap-1 text-gray-300">
                  <TrendingUp className="w-5 h-5 opacity-30" />
-                 <span className="text-[9px] font-medium uppercase">Chart loading...</span>
+                 <span className="text-[9px] font-medium uppercase">Chart data will sync as sales arrive</span>
               </div>
            </div>
         </div>
@@ -102,7 +123,7 @@ export default function DashboardPage() {
            </div>
            
            <div className="space-y-3">
-              {recentChats.map((chat) => (
+              {recentChats.length > 0 ? recentChats.map((chat: any) => (
                 <div key={chat.id} className="flex items-start gap-2.5 group cursor-pointer border-b border-gray-50 pb-2.5 last:border-0 last:pb-0">
                    <div className="w-7 h-7 rounded bg-gray-100 flex items-center justify-center text-gray-400 font-semibold text-[10px] shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
                       {chat.name[0]}
@@ -126,7 +147,12 @@ export default function DashboardPage() {
                       </div>
                    </div>
                 </div>
-              ))}
+              )) : (
+                <div className="flex flex-col items-center justify-center h-32 text-gray-300 gap-2">
+                  <MessageSquare className="w-6 h-6 opacity-20" />
+                  <p className="text-[9px] font-medium uppercase">No conversations yet</p>
+                </div>
+              )}
            </div>
         </div>
       </div>

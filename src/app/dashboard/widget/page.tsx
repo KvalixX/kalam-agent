@@ -3,23 +3,58 @@
 import { motion } from 'framer-motion';
 import { 
   MessageCircle, 
-  Settings2, 
   Eye, 
   Code, 
   Palette, 
-  Layout, 
   CheckCircle2,
   Copy,
   Zap,
-  Globe
+  Globe,
+  Loader2
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
+import { getMerchantSettings } from '@/lib/actions/dashboard';
+import { createClient } from '@/lib/supabase/client';
 
 export default function WidgetCustomizerPage() {
   const [color, setColor] = useState('#7C3AED');
   const [position, setPosition] = useState('right');
   const [message, setMessage] = useState('Salam! Kifach n9der n3awnk? ✨');
   const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getMerchantSettings();
+      const config = data?.agent_configs?.[0];
+      if (config) {
+        setColor(config.widget_color || '#7C3AED');
+        setPosition(config.widget_position || 'right');
+        setMessage(config.welcome_message || 'Salam! Kifach n9der n3awnk? ✨');
+      }
+      setIsLoading(false);
+    }
+    load();
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    const { error } = await supabase
+      .from('agent_configs')
+      .update({
+        widget_color: color,
+        widget_position: position,
+        welcome_message: message
+      })
+      .eq('merchant_id', user?.id);
+
+    if (error) alert(error.message);
+    setIsSaving(false);
+  };
 
   const embedCode = `<script src="https://cdn.kalam.ai/widget.js" data-id="kalam_62a1" data-color="${color}"></script>`;
 
@@ -29,6 +64,14 @@ export default function WidgetCustomizerPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-6xl pb-12">
       <div className="flex items-center justify-between">
@@ -36,9 +79,13 @@ export default function WidgetCustomizerPage() {
           <h1 className="text-lg font-semibold text-foreground">WhatsApp Widget</h1>
           <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Customize the chat button for your Shopify/YouCan store</p>
         </div>
-        <button className="px-4 py-2 bg-primary text-white text-[11px] font-bold rounded-xl hover:bg-primary-dark transition-all flex items-center gap-2 shadow-lg shadow-primary/20">
-           <CheckCircle2 className="w-3.5 h-3.5" />
-           Publish Changes
+        <button 
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-4 py-2 bg-primary text-white text-[11px] font-bold rounded-xl hover:bg-primary-dark transition-all flex items-center gap-2 shadow-lg shadow-primary/20 disabled:opacity-50"
+        >
+           {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+           {isSaving ? 'Saving...' : 'Publish Changes'}
         </button>
       </div>
 
@@ -96,7 +143,6 @@ export default function WidgetCustomizerPage() {
                    onChange={(e) => setMessage(e.target.value)}
                    className="w-full bg-gray-50 border border-border rounded-xl px-3 py-2 text-[11px] font-medium outline-none min-h-[80px] resize-none"
                  />
-                 <p className="text-[9px] text-gray-400 mt-2 font-medium">This is the first message the AI sends when the chat opens.</p>
               </div>
            </div>
 
@@ -116,16 +162,12 @@ export default function WidgetCustomizerPage() {
                     {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                  </button>
               </div>
-              <p className="text-[9px] text-gray-400 mt-3 font-medium">
-                 Paste this code inside your store's <code className="text-primary font-bold">{"<head>"}</code> tag.
-              </p>
            </div>
         </div>
 
         {/* Live Preview */}
         <div className="lg:col-span-2 space-y-4">
-           <div className="bg-gray-100 border border-border rounded-2xl overflow-hidden shadow-inner h-[600px] relative flex flex-col">
-              {/* Fake Browser Header */}
+           <div className="bg-gray-100 border border-border rounded-2xl overflow-hidden shadow-inner h-[500px] relative flex flex-col">
               <div className="h-10 bg-white border-b border-border flex items-center px-4 gap-2">
                  <div className="flex gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
@@ -138,44 +180,31 @@ export default function WidgetCustomizerPage() {
                  </div>
               </div>
 
-              {/* Fake Storefront Content */}
               <div className="flex-1 p-8 bg-white space-y-8 overflow-y-auto relative">
                  <div className="h-8 w-32 bg-gray-50 rounded" />
                  <div className="grid grid-cols-2 gap-6">
-                    <div className="aspect-square bg-gray-50 rounded-2xl border border-dashed border-gray-200 flex items-center justify-center">
-                       <Zap className="w-8 h-8 text-gray-100" />
-                    </div>
+                    <div className="aspect-square bg-gray-50 rounded-2xl border border-dashed border-gray-200" />
                     <div className="space-y-4">
                        <div className="h-6 w-48 bg-gray-50 rounded" />
                        <div className="h-4 w-64 bg-gray-50 rounded" />
-                       <div className="h-10 w-32 bg-primary/10 rounded-xl" />
                     </div>
-                 </div>
-                 <div className="grid grid-cols-4 gap-4">
-                    {[1,2,3,4].map(i => <div key={i} className="aspect-square bg-gray-50 rounded-xl" />)}
                  </div>
 
                  {/* The Widget Preview */}
                  <motion.div 
                    animate={{ 
-                     x: position === 'right' ? 0 : -500, // Very basic positioning for mock
                      left: position === 'left' ? 24 : 'auto',
                      right: position === 'right' ? 24 : 'auto'
                    }}
-                   className="fixed bottom-24 lg:absolute lg:bottom-6 z-20 flex flex-col items-end gap-4"
+                   className="absolute bottom-6 z-20 flex flex-col items-end gap-4"
+                   style={{ left: position === 'left' ? 24 : 'auto', right: position === 'right' ? 24 : 'auto' }}
                  >
-                    {/* Chat Bubble */}
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      className="bg-white border border-border p-3 rounded-2xl rounded-br-sm shadow-2xl max-w-[200px]"
-                    >
+                    <div className="bg-white border border-border p-3 rounded-2xl rounded-br-sm shadow-2xl max-w-[200px]">
                        <p className="text-[10px] font-medium text-gray-800 leading-tight">
                           {message}
                        </p>
-                    </motion.div>
+                    </div>
 
-                    {/* The Button */}
                     <div 
                       className="w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white cursor-pointer hover:scale-110 transition-transform"
                       style={{ backgroundColor: color }}
@@ -183,23 +212,6 @@ export default function WidgetCustomizerPage() {
                        <MessageCircle className="w-7 h-7 fill-current" />
                     </div>
                  </motion.div>
-              </div>
-
-              {/* Preview Footer */}
-              <div className="absolute top-12 right-6 bg-white/80 backdrop-blur-md border border-white/50 px-3 py-1 rounded-full shadow-sm text-[10px] font-bold text-gray-400 uppercase tracking-widest z-30">
-                 Live Preview
-              </div>
-           </div>
-
-           <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-emerald-600 shadow-sm">
-                 <Eye className="w-5 h-5" />
-              </div>
-              <div>
-                 <h4 className="text-xs font-bold text-emerald-900">High-Conversion Design</h4>
-                 <p className="text-[10px] text-emerald-700 font-medium leading-relaxed">
-                    This widget is optimized to appear 2 seconds after page load for maximum engagement without being intrusive.
-                 </p>
               </div>
            </div>
         </div>

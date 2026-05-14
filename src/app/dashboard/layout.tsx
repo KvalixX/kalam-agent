@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect, useTransition } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { signOut } from '@/lib/actions/auth';
+import { getSidebarData } from '@/lib/actions/dashboard';
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
@@ -55,6 +56,19 @@ export default function DashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSigningOut, startSignOut] = useTransition();
+  const [sidebarData, setSidebarData] = useState<any>(null);
+
+  useEffect(() => {
+    async function loadSidebar() {
+      const data = await getSidebarData();
+      setSidebarData(data);
+    }
+    loadSidebar();
+    
+    // Refresh sidebar data every 60 seconds
+    const interval = setInterval(loadSidebar, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -66,6 +80,13 @@ export default function DashboardLayout({
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
   }, []);
+
+  const items = sidebarItems.map(item => {
+    if (item.label === 'Live Chats') {
+      return { ...item, badge: sidebarData?.activeConversations?.toString() || '0' };
+    }
+    return item;
+  });
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] overflow-hidden relative">
@@ -99,7 +120,7 @@ export default function DashboardLayout({
                 </div>
                 <div className="p-2 max-h-[60vh] overflow-y-auto">
                    <div className="px-2 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Quick Navigation</div>
-                   {sidebarItems.map(item => (
+                   {items.map(item => (
                      <Link 
                        key={item.href} 
                        href={item.href}
@@ -114,22 +135,6 @@ export default function DashboardLayout({
                         </div>
                         <ArrowRight className="w-3.5 h-3.5 text-gray-300 opacity-0 group-hover:opacity-100 transition-all" />
                      </Link>
-                   ))}
-                   
-                   <div className="px-2 py-2 mt-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recent Customers</div>
-                   {['Youssef Benali', 'Sara Kamali', 'Ahmed Mansouri'].map(name => (
-                     <button 
-                       key={name}
-                       className="w-full px-3 py-2 rounded-xl hover:bg-gray-50 flex items-center justify-between group transition-all"
-                     >
-                        <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary font-bold text-[10px]">
-                              {name[0]}
-                           </div>
-                           <span className="text-xs font-semibold text-gray-600 group-hover:text-foreground">{name}</span>
-                        </div>
-                        <span className="text-[10px] font-bold text-gray-300 uppercase">View Profile</span>
-                     </button>
                    ))}
                 </div>
              </motion.div>
@@ -161,8 +166,8 @@ export default function DashboardLayout({
           </Link>
         </div>
 
-        <nav className="flex-1 px-2 space-y-0.5">
-          {sidebarItems.map((item) => (
+        <nav className="flex-1 px-2 space-y-0.5 overflow-y-auto">
+          {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -177,8 +182,8 @@ export default function DashboardLayout({
                 <item.icon className={cn("w-3.5 h-3.5", pathname === item.href ? "text-primary" : "text-gray-400 group-hover:text-gray-500")} />
                 {item.label}
               </div>
-              {item.badge && (
-                <span className="bg-primary/10 text-primary text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
+              {item.badge && item.badge !== '0' && (
+                <span className="bg-rose-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
                   {item.badge}
                 </span>
               )}
@@ -190,11 +195,17 @@ export default function DashboardLayout({
           <div className="bg-primary/5 rounded-xl p-2.5 mb-2">
              <div className="flex items-center gap-1.5 text-primary mb-1">
                 <Zap className="w-3 h-3" />
-                <span className="text-[8px] font-semibold uppercase tracking-widest">Pro Plan</span>
+                <span className="text-[8px] font-semibold uppercase tracking-widest">Usage Limits</span>
              </div>
-             <p className="text-[9px] text-gray-600 font-semibold mb-1.5">1,242 / 5,000</p>
+             <p className="text-[9px] text-gray-600 font-semibold mb-1.5">
+                {sidebarData?.usage?.used?.toLocaleString() || '0'} / {sidebarData?.usage?.limit?.toLocaleString() || '500'} messages
+             </p>
              <div className="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
-                <div className="w-[24%] h-full bg-primary rounded-full" />
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${sidebarData?.usage?.percentage || 0}%` }}
+                  className="h-full bg-primary rounded-full" 
+                />
              </div>
           </div>
           
@@ -216,7 +227,7 @@ export default function DashboardLayout({
         <header className="h-12 bg-white border-b border-border flex items-center justify-between px-4 z-10">
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => setIsSearchOpen(true)}
+              onClick={() => setIsSidebarOpen(true)}
               className="p-1.5 hover:bg-gray-50 rounded-lg lg:hidden"
             >
                <Menu className="w-5 h-5 text-gray-500" />
@@ -239,16 +250,20 @@ export default function DashboardLayout({
           <div className="flex items-center gap-2">
             <button className="relative w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-50 rounded-lg transition-all">
                <Bell className="w-4 h-4" />
-               <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-rose-500 border-2 border-white rounded-full" />
+               {sidebarData?.activeConversations > 0 && (
+                 <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-rose-500 border-2 border-white rounded-full" />
+               )}
             </button>
             <div className="h-5 w-px bg-border mx-1" />
             <div className="flex items-center gap-2">
                <div className="text-right hidden sm:block">
-                  <p className="text-xs font-semibold text-foreground leading-none">Mon Compte</p>
-                  <p className="text-[8px] text-gray-400 font-medium uppercase mt-1">Kalam AI</p>
+                  <p className="text-xs font-semibold text-foreground leading-none">
+                    {sidebarData?.businessName || 'Mon Compte'}
+                  </p>
+                  <p className="text-[8px] text-gray-400 font-medium uppercase mt-1">Kalam AI Admin</p>
                </div>
                <div className="w-7 h-7 rounded bg-primary-light flex items-center justify-center text-primary font-semibold text-[10px]">
-                  K
+                  {sidebarData?.businessName?.[0] || 'K'}
                </div>
             </div>
           </div>
