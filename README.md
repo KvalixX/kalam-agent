@@ -2,7 +2,12 @@
 
 **Kalam AI** is a state-of-the-art conversational sales platform designed specifically for Moroccan merchants. It automates customer interactions on WhatsApp, providing intelligent, natural responses in **Moroccan Darija, French, and Arabic** to close sales 24/7.
 
-![Kalam Dashboard Mockup](https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80&w=1200)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-f3d122?style=for-the-badge&logo=groq&logoColor=black)
+![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 ## ✨ Core Features
 
@@ -32,7 +37,7 @@
 
 ### 2. Installation
 ```bash
-git clone https://github.com/yourusername/kalam-ai.git
+git clone https://github.com/KvalixX/kalam-agent.git
 cd kalam-app
 npm install
 ```
