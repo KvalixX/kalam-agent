@@ -259,10 +259,30 @@ export default function CatalogPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                          <button onClick={() => { setSelectedProduct(p); setIsEditModalOpen(true); }} className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all">
+                          <button 
+                            onClick={() => { 
+                              if (p.id.toString().startsWith('mock-')) {
+                                alert("This is a Demo item for visualization. You can only edit real products you've added or synced!");
+                                return;
+                              }
+                              setSelectedProduct(p); 
+                              setIsEditModalOpen(true); 
+                            }} 
+                            className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
+                          >
                              <Edit2 className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => { setSelectedProduct(p); setIsDeleteModalOpen(true); }} className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+                          <button 
+                            onClick={() => { 
+                              if (p.id.toString().startsWith('mock-')) {
+                                alert("This is a Demo item. To test deletion, please add a real product first!");
+                                return;
+                              }
+                              setSelectedProduct(p); 
+                              setIsDeleteModalOpen(true); 
+                            }} 
+                            className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                          >
                              <Trash2 className="w-3.5 h-3.5" />
                           </button>
                        </div>
