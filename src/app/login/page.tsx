@@ -21,34 +21,29 @@ export default function LoginPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-[120px] -z-10" />
-      <div className="absolute bottom-0 -right-4 w-72 h-72 bg-blue-400/10 rounded-full blur-[120px] -z-10" />
+    <div className="min-h-screen bg-white flex overflow-hidden">
+      {/* Left Side - Form */}
+      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+        <div className="mx-auto w-full max-w-[320px] lg:w-80">
+          <div className="mb-8">
+            <Link href="/" className="flex items-center gap-2 mb-6">
+              <div className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-sm">K</div>
+              <span className="font-bold text-xl tracking-tight text-foreground uppercase">Kalam</span>
+            </Link>
+            <h2 className="text-xl font-bold tracking-tight text-gray-900">
+              Welcome back
+            </h2>
+            <p className="mt-1 text-xs text-gray-500 font-medium">
+              Manage your AI sales assistant in one place
+            </p>
+          </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link href="/" className="flex justify-center items-center gap-2 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-lg">K</div>
-          <span className="font-bold text-2xl tracking-tight text-foreground">Kalam</span>
-        </Link>
-        <h2 className="text-center text-xl font-semibold tracking-tight text-gray-900">
-          Welcome back to Kalam
-        </h2>
-        <p className="mt-2 text-center text-[13px] text-gray-500 font-medium">
-          Manage your AI sales assistant in one place
-        </p>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 border border-border shadow-2xl shadow-primary/5 sm:rounded-[2rem] sm:px-10">
-          <form action={action} className="space-y-5">
-
-            {/* Error Message */}
+          <form action={action} className="space-y-4">
             {state?.error && (
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2.5 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2.5"
+                className="flex items-center gap-2.5 bg-rose-50 border border-rose-100 rounded-xl px-3 py-2.5"
               >
                 <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
                 <p className="text-xs font-medium text-rose-700">{state.error}</p>
@@ -69,7 +64,7 @@ export default function LoginPage() {
                   type="email"
                   required
                   disabled={isPending}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-border rounded-xl text-[13px] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all disabled:opacity-60"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-border rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all disabled:opacity-60 bg-gray-50/30"
                   placeholder="name@company.com"
                 />
               </div>
@@ -82,7 +77,7 @@ export default function LoginPage() {
                 </label>
                 <div className="text-[11px]">
                   <a href="#" className="font-bold text-primary hover:text-primary-dark">
-                    Forgot your password?
+                    Forgot?
                   </a>
                 </div>
               </div>
@@ -96,66 +91,65 @@ export default function LoginPage() {
                   type="password"
                   required
                   disabled={isPending}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-border rounded-xl text-[13px] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all disabled:opacity-60"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-border rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all disabled:opacity-60 bg-gray-50/30"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
-            <div>
-              <button
-                id="login-submit-btn"
-                type="submit"
-                disabled={isPending}
-                className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-xl shadow-lg shadow-primary/20 text-xs font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all group disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  <>
-                    Sign in to Dashboard
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              id="login-submit-btn"
+              type="submit"
+              disabled={isPending}
+              className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-xl shadow-lg shadow-primary/20 text-[13px] font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all group disabled:opacity-70"
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
           </form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-2 bg-white text-gray-400 font-medium uppercase tracking-widest text-[10px]">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <button disabled className="w-full inline-flex justify-center items-center gap-2 py-2 px-4 border border-border rounded-xl bg-white text-[12px] font-bold text-gray-400 cursor-not-allowed opacity-50">
-                <Globe className="w-4 h-4" />
-                Google
-              </button>
-              <button disabled className="w-full inline-flex justify-center items-center gap-2 py-2 px-4 border border-border rounded-xl bg-white text-[12px] font-bold text-gray-400 cursor-not-allowed opacity-50">
-                <MessageCircle className="w-4 h-4" />
-                WhatsApp
-              </button>
-            </div>
-            <p className="text-center text-[10px] text-gray-400 font-medium mt-2">Coming soon</p>
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-500">
+              New to Kalam?{' '}
+              <Link href="/signup" className="font-bold text-primary hover:text-primary-dark">
+                Start trial
+              </Link>
+            </p>
           </div>
         </div>
+      </div>
 
-        <p className="mt-8 text-center text-[13px] text-gray-500 font-medium">
-          New to Kalam?{' '}
-          <Link href="/signup" className="font-bold text-primary hover:text-primary-dark underline-offset-4 hover:underline">
-            Start your free trial
-          </Link>
-        </p>
+      {/* Right Side - Image */}
+      <div className="hidden lg:block relative w-0 flex-1">
+        <img
+          className="absolute inset-0 h-full w-full object-cover"
+          src="/auth-side.png"
+          alt="Kalam AI Auth"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <h3 className="text-4xl font-bold text-white mb-4 leading-tight">
+              L'agent IA qui parle <br/> 
+              <span className="text-primary-light italic">comme vos clients.</span>
+            </h3>
+            <p className="text-lg text-gray-200 max-w-md font-medium">
+              Rejoignez des centaines de marchands marocains qui automatisent leurs ventes sur WhatsApp avec Kalam.
+            </p>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
